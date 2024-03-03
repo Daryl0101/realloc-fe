@@ -1,22 +1,24 @@
-import React from "react";
 import LoginForm from "./loginForm";
-import {
-  Box,
-  Button,
-  Divider,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { signIn } from "next-auth/react";
+import { Box, Divider, Paper, Typography } from "@mui/material";
 import { options } from "../api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-const LoginPage = async () => {
+const LoginPage = async ({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) => {
+  console.log(searchParams);
   const session = await getServerSession(options);
   if (session) {
-    redirect("/");
+    redirect(
+      !!searchParams && typeof searchParams.callbackUrl === "string"
+        ? searchParams.callbackUrl
+        : "/"
+    );
   }
 
   return (
