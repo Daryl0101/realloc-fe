@@ -5,7 +5,6 @@ import { Box, Button, Grid, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Status } from "../../lib/utils";
 import { useSnackbar } from "notistack";
-
 const LoginForm = () => {
   const [formSubmissionStatus, setFormSubmissionStatus] = useState<Status>(
     Status.OPEN
@@ -20,13 +19,16 @@ const LoginForm = () => {
     await signIn("credentials", {
       username: formJson.username,
       password: formJson.password,
-      redirect: true,
-      callbackUrl: "/",
+      redirect: false,
+      // redirect: true,
+      // callbackUrl: "/",
     });
-    setFormSubmissionStatus(Status.OPEN);
+
+    // setFormSubmissionStatus(Status.OPEN);
 
     const session = await getSession();
     if (!session) {
+      setFormSubmissionStatus(Status.OPEN);
       enqueueSnackbar("Failed to login", {
         variant: "error",
       });
@@ -34,6 +36,10 @@ const LoginForm = () => {
       enqueueSnackbar("Logged in successfully", {
         variant: "success",
       });
+      setTimeout(() => {
+        setFormSubmissionStatus(Status.OPEN);
+        location.reload();
+      }, 1000);
     }
   };
 
