@@ -5,7 +5,6 @@ import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
-import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
@@ -17,11 +16,12 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
-import FoodBankIcon from "@mui/icons-material/FoodBank";
+import RestaurantIcon from "@mui/icons-material/Restaurant";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -116,7 +116,12 @@ export default function Navigation(props: { session: Session }) {
 
   const pages = [
     { name: "Dashboard", path: "/", icon: <HomeIcon />, managerOnly: false },
-    { name: "Food", path: "/food", icon: <FoodBankIcon />, managerOnly: false },
+    {
+      name: "Product",
+      path: "/product",
+      icon: <RestaurantIcon />,
+      managerOnly: false,
+    },
     {
       name: "Family",
       path: "/family",
@@ -138,7 +143,7 @@ export default function Navigation(props: { session: Session }) {
     {
       name: "Package",
       path: "/package",
-      icon: <ShoppingBagIcon />,
+      icon: <LocalShippingIcon />,
       managerOnly: false,
     },
   ];
@@ -174,8 +179,7 @@ export default function Navigation(props: { session: Session }) {
 
   return (
     <>
-      <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" enableColorOnDark={true} open={open}>
         <Toolbar>
           <IconButton
             color="inherit"

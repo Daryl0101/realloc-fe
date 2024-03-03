@@ -9,6 +9,7 @@ import "@fontsource/roboto/700.css";
 import Navigation from "../components/navigation";
 import { getServerSession } from "next-auth";
 import { options } from "./api/auth/[...nextauth]/options";
+import { CssBaseline } from "@mui/material";
 
 export default async function RootLayout({
   children,
@@ -20,6 +21,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <Providers>
+          <CssBaseline />
           <Box sx={{ display: "flex" }}>
             {session ? <Navigation session={session} /> : null}
             <Box

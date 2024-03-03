@@ -10,7 +10,11 @@ import {
 import { getServerSession } from "next-auth";
 import React from "react";
 import { options } from "../api/auth/[...nextauth]/options";
-import { ApiResponse, Gender } from "../../lib/utils";
+import {
+  ApiResponse,
+  Gender,
+  parseDateStringToFormattedDate,
+} from "../../lib/utils";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 
@@ -204,12 +208,7 @@ const Profile = async () => {
                     disabled
                     label="Joined Date"
                     variant="outlined"
-                    defaultValue={new Date(dateJoined).toLocaleString("en-US", {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                    defaultValue={parseDateStringToFormattedDate(dateJoined)}
                     sx={{ width: "70%" }}
                   />
                 </Grid>

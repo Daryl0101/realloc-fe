@@ -17,6 +17,7 @@ const theme = createTheme({
       // dark: "#ba000d",
       contrastText: "#fff",
     },
+    mode: "dark",
   },
   components: {
     MuiTimeline: {
