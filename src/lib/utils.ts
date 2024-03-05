@@ -57,6 +57,11 @@ export type PaginationRequest = {
   sort_order: SortOrder;
 };
 
+export type DropdownItem = {
+  id: string;
+  name: string;
+};
+
 export const paginationResponseDefaultState: PaginationResponse<null> = {
   total_page: 1,
   current_page: 1,
