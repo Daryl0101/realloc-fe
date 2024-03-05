@@ -27,7 +27,7 @@ type FamilyResponse = {
   is_halal: boolean;
   household_income: string;
   phone_number: string;
-  last_received_date: string;
+  last_received_date: string | null;
   address: string;
   total_member: string;
   calorie_discount: string;
@@ -106,7 +106,10 @@ export const retrieveFamilyAPICall = async (
           : HalalStatus["Non Halal"],
         householdIncome: result.model.household_income,
         phoneNumber: result.model.phone_number,
-        lastReceivedDate: result.model.last_received_date,
+        lastReceivedDate:
+          result.model.last_received_date === null
+            ? "NA"
+            : result.model.last_received_date,
         address: result.model.address,
         totalMember: result.model.total_member,
         calorieDiscount: result.model.calorie_discount,
