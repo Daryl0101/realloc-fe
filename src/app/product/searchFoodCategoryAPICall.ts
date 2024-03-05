@@ -17,7 +17,7 @@ type FoodCategory = {
   description: string;
 };
 
-const foodCategorySearchAPI = `${GlobalConfig.baseAPIPath}/system-reference/food-category`;
+const foodCategorySearchAPI = `${GlobalConfig.baseAPIPath}/system-reference/food-categories/search`;
 
 export const searchFoodCategoryAPICall = async (searchString: string) => {
   const session = await getServerSession(options);
