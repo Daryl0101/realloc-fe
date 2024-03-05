@@ -12,10 +12,7 @@ const logout = async () => {
       Authorization: `Token ${session?.user.token}`,
     },
   });
-
-  if (res.ok) {
-    signOut();
-  }
+  signOut();
 };
 
 export default logout;

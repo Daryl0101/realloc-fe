@@ -29,6 +29,7 @@ import { LoadingButton } from "@mui/lab";
 import { addNewUser } from "./addNewUser";
 import { useSnackbar } from "notistack";
 import { searchUserAPICall } from "./searchUserAPICall";
+import { MuiTelInput } from "mui-tel-input";
 
 type SearchParams = {
   wildcard: string;
@@ -63,6 +64,7 @@ const Organization = () => {
   const [addNewUserDialogOpenState, setAddNewUserDialogOpenState] =
     React.useState(Status.CLOSED);
   const { enqueueSnackbar } = useSnackbar();
+  const [phoneNumber, setPhoneNumber] = React.useState("");
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -161,6 +163,7 @@ const Organization = () => {
       enqueueSnackbar(result.success, { variant: "success" });
       handleAddNewUserDialogClose();
       searchUser();
+      setPhoneNumber("");
     } else if (result?.error) {
       enqueueSnackbar(result.error, { variant: "error" });
     }
@@ -289,14 +292,27 @@ const Organization = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+              {/* <TextField
                 name="phoneNumber"
                 variant="outlined"
                 label="Phone Number"
                 type="tel"
+                inputProps={{ pattern: "[0-9]{3}-[0-9]{7,8}" }}
                 fullWidth
                 required
                 autoComplete="off"
+                disabled={addNewUserDialogOpenState === Status.LOADING}
+              /> */}
+              <MuiTelInput
+                name="phoneNumber"
+                variant="outlined"
+                label="Phone Number"
+                fullWidth
+                required
+                autoComplete="off"
+                defaultCountry="MY"
+                value={phoneNumber}
+                onChange={(value) => setPhoneNumber(value)}
                 disabled={addNewUserDialogOpenState === Status.LOADING}
               />
             </Grid>

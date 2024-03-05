@@ -232,8 +232,8 @@ const ProductDialog = ({
       status: Status.OPEN,
     }));
 
-    if ("product_no" in result) {
-      enqueueSnackbar(`Product ${result.product_no} retrieved successfully`, {
+    if ("productNo" in result) {
+      enqueueSnackbar(`Product ${result.productNo} retrieved successfully`, {
         variant: "success",
       });
       productParamsDefaultState = result;
@@ -361,7 +361,13 @@ const ProductDialog = ({
 
   const handleNumberFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     var value = parseFloat(e.target.value);
-    if (!value || value < 0)
+    if (
+      !value ||
+      value <
+        numberFields.filter((field) => {
+          return field.name === e.target.name;
+        })[0].minVal
+    )
       value = parseFloat((productParamsDefaultState as any)[e.target.name]);
     e.target.value = value.toFixed(2).toString();
     setProductParamsState((prevState) => ({
@@ -722,8 +728,15 @@ const ProductDialog = ({
               />
             </Grid>
           ))}
-          {[Action.VIEW, Action.EDIT].includes(pageState.action)
-            ? [
+          {[Action.VIEW, Action.EDIT].includes(pageState.action) ? (
+            <>
+              <Grid item xs={12}>
+                <Divider></Divider>
+              </Grid>
+              <Grid item xs={12}>
+                <DialogContentText>Metadata Information</DialogContentText>
+              </Grid>
+              {[
                 {
                   key: "modifiedAt",
                   label: "Modified At",
@@ -734,23 +747,6 @@ const ProductDialog = ({
                   label: "Created At",
                   value: productParamsState.createdAt,
                 },
-              ].map((field) => {
-                return (
-                  <Grid key={field.key} item xs={6}>
-                    <TextField
-                      disabled
-                      label={field.label}
-                      value={parseDateStringToFormattedDate(field.value)}
-                      name={field.key}
-                      variant="outlined"
-                      fullWidth
-                    />
-                  </Grid>
-                );
-              })
-            : null}
-          {[Action.VIEW, Action.EDIT].includes(pageState.action)
-            ? [
                 {
                   key: "modifiedBy",
                   label: "Modified By",
@@ -767,15 +763,20 @@ const ProductDialog = ({
                     <TextField
                       disabled
                       label={field.label}
-                      value={field.value}
+                      value={
+                        ["modifiedAt", "createdAt"].includes(field.key)
+                          ? parseDateStringToFormattedDate(field.value)
+                          : field.value
+                      }
                       name={field.key}
                       variant="outlined"
                       fullWidth
                     />
                   </Grid>
                 );
-              })
-            : null}
+              })}
+            </>
+          ) : null}
         </Grid>
       </DialogContent>
       <DialogActions>
@@ -798,7 +799,7 @@ const ProductDialog = ({
             <span>Reset</span>
           </LoadingButton>
         ) : null}
-        {[Action.EDIT, Action.VIEW].includes(pageState.action) ? (
+        {[Action.VIEW, Action.EDIT].includes(pageState.action) ? (
           <LoadingButton
             loading={pageState.status === Status.LOADING}
             variant="contained"
