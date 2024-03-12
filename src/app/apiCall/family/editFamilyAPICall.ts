@@ -1,8 +1,9 @@
 "use server";
 import { getServerSession } from "next-auth";
-import GlobalConfig from "../../../app.config";
-import { options } from "../api/auth/[...nextauth]/options";
-import { ApiResponse, HalalStatus, getErrorMessage } from "../../lib/utils";
+import GlobalConfig from "../../../../app.config";
+import { options } from "../../api/auth/[...nextauth]/options";
+import { ApiResponse, HalalStatus, getErrorMessage } from "../../../lib/utils";
+import dayjs from "dayjs";
 
 type PersonInfo = {
   id: string | null;
@@ -36,6 +37,9 @@ type Props = {
 export const editFamilyAPICall = async (props: Props) => {
   const session = await getServerSession(options);
   var res = null;
+  if (props.members.map((x) => x.gender).includes("")) {
+    return { error: "Gender is required" };
+  }
   try {
     if (!props.id) return { error: "Family ID is not found" };
     res = await fetch(
@@ -58,11 +62,14 @@ export const editFamilyAPICall = async (props: Props) => {
           ),
           members: props.members.map((member) => {
             return {
-              ...member,
-              id: !!member.id ? parseInt(member.id) : null,
+              id: !!member.id ? parseInt(member.id) : 0,
               first_name: member.firstName,
               last_name: member.lastName,
               activity_level: parseInt(member.activityLevel),
+              gender: member.gender.toUpperCase(),
+              birthdate: dayjs(member.birthdate).format("YYYY-MM-DD"),
+              height: parseFloat(member.height),
+              weight: parseFloat(member.weight),
             };
           }),
         }),

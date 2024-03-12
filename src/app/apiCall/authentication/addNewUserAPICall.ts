@@ -1,12 +1,12 @@
 "use server";
 import { getServerSession } from "next-auth";
-import GlobalConfig from "../../../app.config";
-import { options } from "../api/auth/[...nextauth]/options";
-import { getErrorMessage } from "../../lib/utils";
+import GlobalConfig from "../../../../app.config";
+import { options } from "../../api/auth/[...nextauth]/options";
+import { getErrorMessage } from "../../../lib/utils";
 
 const userCreateAPI = `${GlobalConfig.baseAPIPath}/authentication/register`;
 
-export const addNewUser = async (formData: FormData) => {
+export const addNewUserAPICall = async (formData: FormData) => {
   const formJson = Object.fromEntries(formData.entries());
   // const {
   //   username,

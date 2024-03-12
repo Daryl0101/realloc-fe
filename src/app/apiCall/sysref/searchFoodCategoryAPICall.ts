@@ -1,15 +1,15 @@
 "use server";
 
-import GlobalConfig from "../../../app.config";
+import GlobalConfig from "../../../../app.config";
 import { getServerSession } from "next-auth";
 
-import { options } from "../api/auth/[...nextauth]/options";
+import { options } from "../../api/auth/[...nextauth]/options";
 import {
   ApiResponse,
   HalalStatus,
   PaginationResponse,
   getErrorMessage,
-} from "../../lib/utils";
+} from "../../../lib/utils";
 
 type FoodCategory = {
   id: number;

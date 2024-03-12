@@ -26,9 +26,9 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import CustomNoRowsOverlay from "../../components/dataGrid/noRowsOverlay";
 import { LoadingButton } from "@mui/lab";
-import { addNewUser } from "./addNewUser";
+import { addNewUserAPICall } from "../apiCall/authentication/addNewUserAPICall";
 import { useSnackbar } from "notistack";
-import { searchUserAPICall } from "./searchUserAPICall";
+import { searchUserAPICall } from "../apiCall/authentication/searchUserAPICall";
 import { MuiTelInput } from "mui-tel-input";
 
 type SearchParams = {
@@ -156,7 +156,7 @@ const Organization = () => {
     setAddNewUserDialogOpenState(Status.LOADING);
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const result = await addNewUser(formData);
+    const result = await addNewUserAPICall(formData);
 
     setAddNewUserDialogOpenState(Status.OPEN);
     if (result?.success) {

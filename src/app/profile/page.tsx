@@ -13,7 +13,7 @@ import { options } from "../api/auth/[...nextauth]/options";
 import {
   ApiResponse,
   Gender,
-  parseDateStringToFormattedDate,
+  parseDateTimeStringToFormattedDateTime,
 } from "../../lib/utils";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
@@ -65,7 +65,7 @@ const Profile = async () => {
     first_name: firstName = "",
     last_name: lastName = "",
     is_ngo_manager: isNGOManager = "",
-    date_joined: dateJoined,
+    date_joined: dateTimeJoined,
     gender = "",
   } = res.model;
   return (
@@ -208,7 +208,9 @@ const Profile = async () => {
                     disabled
                     label="Joined Date"
                     variant="outlined"
-                    defaultValue={parseDateStringToFormattedDate(dateJoined)}
+                    defaultValue={parseDateTimeStringToFormattedDateTime(
+                      dateTimeJoined
+                    )}
                     sx={{ width: "70%" }}
                   />
                 </Grid>

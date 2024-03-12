@@ -1,56 +1,53 @@
 "use server";
 
-import GlobalConfig from "../../../app.config";
+import GlobalConfig from "../../../../app.config";
 import { getServerSession } from "next-auth";
 
-import { options } from "../api/auth/[...nextauth]/options";
+import { options } from "../../api/auth/[...nextauth]/options";
 import {
   ApiResponse,
   HalalStatus,
   PaginationRequest,
   PaginationResponse,
   getErrorMessage,
-} from "../../lib/utils";
+} from "../../../lib/utils";
 
 type SearchParams = {
-  familyNo: string;
-  familyOrPersonName: string;
+  storageNo: string;
+  description: string;
   halalStatus: HalalStatus;
+  excludeProductId: string;
 };
 
-type FamilyItem = {
+type StorageItem = {
   id: string;
   sequence: number | null;
-  family_no: string;
-  name: string;
-  last_received_date: string;
+  storage_no: string;
+  description: string;
   is_halal: boolean;
 };
 
-const familySearchAPI = `${GlobalConfig.baseAPIPath}/master-data/families/search`;
+const storageSearchAPI = `${GlobalConfig.baseAPIPath}/system-reference/storages/search`;
 
-export const searchFamilyAPICall = async (
-  {
-    familyNo,
-    familyOrPersonName: familyOrPersonName,
-    halalStatus,
-  }: SearchParams,
+export const searchStorageAPICall = async (
+  { storageNo, description, halalStatus, excludeProductId }: SearchParams,
   pagination: PaginationRequest
 ) => {
   const session = await getServerSession(options);
   var res = null;
   try {
     res = await fetch(
-      familySearchAPI +
+      storageSearchAPI +
         "?" +
         new URLSearchParams({
           page_no: (pagination.page_no + 1).toString(),
           page_size: pagination.page_size.toString(),
           sort_column: pagination.sort_column,
           sort_order: pagination.sort_order.toString(),
-          family_no: familyNo,
-          family_or_person_name: familyOrPersonName,
+          storage_no: storageNo,
+          description: description,
           halal_status: halalStatus.toString(),
+          exclude_product_id: excludeProductId,
         }),
       {
         method: "GET",
@@ -64,7 +61,7 @@ export const searchFamilyAPICall = async (
     return { error: getErrorMessage(error) };
   }
 
-  const result: ApiResponse<PaginationResponse<FamilyItem>> = await res.json();
+  const result: ApiResponse<PaginationResponse<StorageItem>> = await res.json();
 
   if (!res.ok && result.errors && result.model === null) {
     return {

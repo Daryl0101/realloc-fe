@@ -1,7 +1,7 @@
 "use server";
 import { getServerSession } from "next-auth";
-import { ApiResponse, Gender, getErrorMessage } from "../../lib/utils";
-import { options } from "../api/auth/[...nextauth]/options";
+import { ApiResponse, Gender, getErrorMessage } from "../../../lib/utils";
+import { options } from "../../api/auth/[...nextauth]/options";
 
 type Model = {
   username: string;

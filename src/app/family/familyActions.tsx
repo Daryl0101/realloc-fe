@@ -4,7 +4,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
-import { deleteFamilyAPICall } from "./deleteFamilyAPICall";
+import { deleteFamilyAPICall } from "../apiCall/family/deleteFamilyAPICall";
 import { Action, Status } from "@/src/lib/utils";
 
 type ButtonProps = {
@@ -27,7 +27,7 @@ type FamilyItem = {
   sequence: number | null;
   family_no: string;
   name: string;
-  last_received_date: string;
+  last_received_date: string | null;
   is_halal: boolean;
 };
 

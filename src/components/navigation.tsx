@@ -117,15 +117,15 @@ export default function Navigation(props: { session: Session }) {
   const pages = [
     { name: "Dashboard", path: "/", icon: <HomeIcon />, managerOnly: false },
     {
-      name: "Product",
-      path: "/product",
-      icon: <RestaurantIcon />,
-      managerOnly: false,
-    },
-    {
       name: "Family",
       path: "/family",
       icon: <FamilyRestroomIcon />,
+      managerOnly: false,
+    },
+    {
+      name: "Product",
+      path: "/product",
+      icon: <RestaurantIcon />,
       managerOnly: false,
     },
     {

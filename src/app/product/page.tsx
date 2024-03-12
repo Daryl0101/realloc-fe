@@ -15,22 +15,25 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  Grid,
   IconButton,
   LinearProgress,
   Paper,
   Radio,
   RadioGroup,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useEffect } from "react";
-import { searchProductAPICall } from "./searchProductAPICall";
+import { searchProductAPICall } from "../apiCall/product/searchProductAPICall";
 import {
   DataGrid,
   GridColDef,
+  GridRowSelectionModel,
   GridSortModel,
   GridToolbar,
 } from "@mui/x-data-grid";
@@ -38,6 +41,7 @@ import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
 import ProductDialog from "./productDialog";
 import ProductActions from "./productActions";
 import { LoadingButton } from "@mui/lab";
+import InboundInventoryDialog from "./inboundInventoryDialog";
 
 type SearchParams = {
   productNo: string;
@@ -72,10 +76,12 @@ const Product = () => {
     ProductItem[]
   >([]);
   const [pageState, setPageState] = React.useState<{
-    action: Action;
+    action: Action | "INBOUND";
     status: Status;
     id: string | null;
   }>({ action: Action.NONE, status: Status.CLOSED, id: null });
+  const [rowSelectionModel, setRowSelectionModel] =
+    React.useState<GridRowSelectionModel>([]);
   const { enqueueSnackbar } = useSnackbar();
 
   const searchProduct = async () => {
@@ -151,6 +157,14 @@ const Product = () => {
 
   //#endregion
 
+  const handleInboundInventoryDialogOpen = () => {
+    setPageState((prevState) => ({
+      ...prevState,
+      action: "INBOUND",
+      status: Status.OPEN,
+    }));
+  };
+
   const columns: readonly GridColDef<ProductItem>[] = [
     {
       field: "sequence",
@@ -213,6 +227,14 @@ const Product = () => {
 
   return (
     <>
+      <InboundInventoryDialog
+        pageState={pageState}
+        setPageState={setPageState}
+        productId={
+          rowSelectionModel.length == 1 ? rowSelectionModel[0].toString() : ""
+        }
+        enqueueSnackbar={enqueueSnackbar}
+      ></InboundInventoryDialog>
       <ProductDialog
         pageState={pageState}
         setPageState={setPageState}
@@ -220,18 +242,41 @@ const Product = () => {
         enqueueSnackbar={enqueueSnackbar}
       ></ProductDialog>
       <Box display="flex" width="100%" justifyContent="space-between" my={2}>
-        <Typography variant="h6" mb={2}>
+        <Typography variant="h6" mb={2} mr={2} justifySelf="flex-start">
           Product
         </Typography>
-        <>
-          <LoadingButton
-            variant="contained"
-            onClick={handleAddNewProductDialogOpen}
-            loading={pageState.status === Status.LOADING}
+        <Box display="flex" gap={2}>
+          {/* <Grid container spacing={2} justifySelf="flex-end"> */}
+          {/* <Grid item xs={6}> */}
+          <Tooltip
+            title="Select a product from the table below to start inbound"
+            placement="top"
           >
-            <span>Add New Product</span>
-          </LoadingButton>
-        </>
+            <Box>
+              <LoadingButton
+                variant="contained"
+                onClick={handleInboundInventoryDialogOpen}
+                loading={pageState.status === Status.LOADING}
+                disabled={rowSelectionModel.length != 1}
+              >
+                <span>Inbound</span>
+              </LoadingButton>
+            </Box>
+          </Tooltip>
+          {/* </Grid> */}
+          {/* <Grid item xs={6}> */}
+          <Box>
+            <LoadingButton
+              variant="contained"
+              onClick={handleAddNewProductDialogOpen}
+              loading={pageState.status === Status.LOADING}
+            >
+              <span>Add New Product</span>
+            </LoadingButton>
+          </Box>
+          {/* </Grid> */}
+          {/* </Grid> */}
+        </Box>
       </Box>
       <form onSubmit={handleProductSearch}>
         <Paper elevation={3}>
@@ -325,10 +370,24 @@ const Product = () => {
             loadingOverlay: LinearProgress,
             toolbar: GridToolbar,
           }}
-          sx={{ p: 1 }}
+          sx={{
+            p: 1, // disable cell selection style
+            ".MuiDataGrid-cell:focus": {
+              outline: "none",
+            },
+            // pointer cursor on ALL rows
+            "& .MuiDataGrid-row:hover": {
+              cursor: "pointer",
+            },
+          }}
           rows={searchResultState}
           columns={columns}
           loading={pageState.status === Status.LOADING}
+          rowSelectionModel={rowSelectionModel}
+          onRowSelectionModelChange={(newSelection) => {
+            setRowSelectionModel(newSelection);
+          }}
+          getRowId={(row) => row.id}
           // initialState={{
           //   pagination: {
           //     paginationModel: {

@@ -1,13 +1,15 @@
 "use server";
 import { getServerSession } from "next-auth";
-import GlobalConfig from "../../../app.config";
-import { options } from "../api/auth/[...nextauth]/options";
+import GlobalConfig from "../../../../app.config";
+import { options } from "../../api/auth/[...nextauth]/options";
 import {
   ApiResponse,
   Gender,
   HalalStatus,
   getErrorMessage,
-} from "../../lib/utils";
+  parseDateStringToFormattedDate,
+} from "../../../lib/utils";
+import dayjs from "dayjs";
 
 const familyCreateAPI = `${GlobalConfig.baseAPIPath}/master-data/families/create`;
 
@@ -62,14 +64,15 @@ export const addNewFamilyAPICall = async (props: Props) => {
           (category) => category.id
         ),
         members: props.members.map((member) => {
-          console.log(member.activityLevel);
           return {
-            ...member,
             id: 0,
             first_name: member.firstName,
             last_name: member.lastName,
             activity_level: parseInt(member.activityLevel),
             gender: member.gender.toUpperCase(),
+            birthdate: dayjs(member.birthdate).format("YYYY-MM-DD"),
+            height: parseFloat(member.height),
+            weight: parseFloat(member.weight),
           };
         }),
       }),

@@ -28,7 +28,7 @@ import { useSnackbar } from "notistack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useEffect } from "react";
-import { searchFamilyAPICall } from "./searchFamilyAPICall";
+import { searchFamilyAPICall } from "../apiCall/family/searchFamilyAPICall";
 import {
   DataGrid,
   GridColDef,
@@ -51,7 +51,7 @@ type FamilyItem = {
   sequence: number | null;
   family_no: string;
   name: string;
-  last_received_date: string;
+  last_received_date: string | null;
   is_halal: boolean;
 };
 
@@ -187,7 +187,9 @@ const Family = () => {
       renderCell(params) {
         return (
           <Typography variant="body2">
-            {parseDateStringToFormattedDate(params.row.last_received_date)}
+            {!!params.row.last_received_date
+              ? parseDateStringToFormattedDate(params.row.last_received_date)
+              : "NA"}
           </Typography>
         );
       },
@@ -228,10 +230,10 @@ const Family = () => {
         enqueueSnackbar={enqueueSnackbar}
       ></FamilyDialog>
       <Box display="flex" width="100%" justifyContent="space-between" my={2}>
-        <Typography variant="h6" mb={2}>
+        <Typography variant="h6" justifySelf="flex-start" mb={2}>
           Family
         </Typography>
-        <>
+        <Box justifySelf="flex-end">
           <LoadingButton
             variant="contained"
             onClick={handleAddNewFamilyDialogOpen}
@@ -239,7 +241,7 @@ const Family = () => {
           >
             <span>Add New Family</span>
           </LoadingButton>
-        </>
+        </Box>
       </Box>
       <form onSubmit={handleFamilySearch}>
         <Paper elevation={3}>

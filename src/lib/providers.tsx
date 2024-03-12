@@ -6,6 +6,8 @@ import React, { ReactNode } from "react";
 import theme from "./theme";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import CloseIcon from "@mui/icons-material/Close";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 interface props {
   children: ReactNode;
@@ -29,16 +31,18 @@ const CloseSnackbarAction = ({ id }: any) => {
 const Providers = ({ children }: props) => {
   return (
     <ThemeProvider theme={theme}>
-      <SnackbarProvider
-        autoHideDuration={3000}
-        action={(key) => <CloseSnackbarAction id={key} />}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <SessionProvider>{children}</SessionProvider>
-      </SnackbarProvider>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <SnackbarProvider
+          autoHideDuration={3000}
+          action={(key) => <CloseSnackbarAction id={key} />}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <SessionProvider>{children}</SessionProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 };

@@ -4,7 +4,6 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
-import { deleteProductAPICall } from "../apiCall/product/deleteProductAPICall";
 import { Action, Status } from "@/src/lib/utils";
 
 type ButtonProps = {
@@ -20,58 +19,58 @@ type ButtonProps = {
     | undefined;
   icon: JSX.Element;
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  disabled: boolean;
 };
 
 type ProductItem = {
   id: string;
-  sequence: number | null;
   product_no: string;
   name: string;
   description: string;
   is_halal: boolean;
 };
 
+type StorageItem = {
+  id: string;
+  storage_no: string;
+  description: string;
+  is_halal: boolean;
+};
+
+type InventoryItem = {
+  id: string;
+  sequence: number | null;
+  inventory_no: string;
+  product: ProductItem;
+  storage: StorageItem;
+  expiration_date: string;
+  received_date: string;
+  total_qty: number;
+  available_qty: number;
+};
+
 type Props = {
-  params: GridRenderCellParams<ProductItem, any, any, GridTreeNodeWithRender>;
-  pageState: { status: Status; action: Action | "INBOUND"; id: string | null };
+  params: GridRenderCellParams<InventoryItem, any, any, GridTreeNodeWithRender>;
+  pageState: { status: Status; action: Action; id: string | null };
   setPageState: React.Dispatch<
     React.SetStateAction<{
-      action: Action | "INBOUND";
+      action: Action;
       status: Status;
       id: string | null;
     }>
   >;
-  searchProduct: () => void;
+  searchInventory: () => void;
   enqueueSnackbar: (message: string, options?: any) => void;
 };
 
-const ProductActions = ({
+const InventoryActions = ({
   params,
   pageState,
   setPageState,
-  searchProduct,
+  searchInventory,
   enqueueSnackbar,
 }: Props) => {
-  const deleteProduct = async () => {
-    setPageState((prevState) => ({ ...prevState, status: Status.LOADING }));
-    const result = await deleteProductAPICall(params.row.id);
-    if (result.success) {
-      enqueueSnackbar(result.success, { variant: "success" });
-    } else if (result.error) {
-      if (typeof result.error === "string")
-        enqueueSnackbar(result.error, { variant: "error" });
-      else {
-        result.error.forEach((error) => {
-          enqueueSnackbar(error, { variant: "error" });
-        });
-      }
-    }
-    searchProduct();
-
-    setPageState((prevState) => ({ ...prevState, status: Status.OPEN }));
-  };
-
-  const handleViewProduct = (
+  const handleViewInventory = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     setPageState({
@@ -80,7 +79,7 @@ const ProductActions = ({
       id: params.row.id,
     });
   };
-  const handleEditProduct = (
+  const handleAdjustInventory = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     setPageState({
@@ -89,32 +88,57 @@ const ProductActions = ({
       id: params.row.id,
     });
   };
-  const handleDeleteProduct = (
+  const handleDeleteInventory = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    deleteProduct();
+    setPageState({
+      action: Action.DELETE,
+      status: Status.OPEN,
+      id: params.row.id,
+    });
   };
 
-  const buttons: ButtonProps[] = [
+  var buttons: ButtonProps[] = [
     {
-      label: "view-product",
+      label: "view-inventory",
       color: "default",
       icon: <VisibilityIcon />,
-      onClick: handleViewProduct,
+      onClick: handleViewInventory,
+      disabled: false,
     },
     {
-      label: "edit-product",
+      label: "adjust-inventory",
       color: "info",
       icon: <EditIcon />,
-      onClick: handleEditProduct,
+      onClick: handleAdjustInventory,
+      disabled:
+        // params.row.available_qty <= 0 ||
+        // params.row.available_qty > params.row.total_qty,
+        false,
     },
     {
-      label: "delete-product",
+      label: "delete-inventory",
       color: "error",
       icon: <DeleteIcon />,
-      onClick: handleDeleteProduct,
+      onClick: handleDeleteInventory,
+      disabled:
+        params.row.available_qty <= 0 ||
+        params.row.available_qty !== params.row.total_qty,
     },
   ];
+
+  if (
+    params.row.total_qty < 0 ||
+    params.row.available_qty < 0 ||
+    params.row.available_qty > params.row.total_qty
+  )
+    enqueueSnackbar(
+      `${params.row.inventory_no}: Error in this line, please inspect`,
+      {
+        variant: "error",
+      }
+    );
+
   return (
     <>
       {buttons.map((button) => {
@@ -124,7 +148,7 @@ const ProductActions = ({
             aria-label={button.label}
             color={button.color}
             onClick={button.onClick}
-            disabled={pageState.status === Status.LOADING}
+            disabled={button.disabled || pageState.status === Status.LOADING}
           >
             {button.icon}
           </IconButton>
@@ -134,4 +158,4 @@ const ProductActions = ({
   );
 };
 
-export default ProductActions;
+export default InventoryActions;

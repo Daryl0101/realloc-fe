@@ -11,7 +11,6 @@ const LoginPage = async ({
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
-  console.log(searchParams);
   const session = await getServerSession(options);
   if (session) {
     redirect(

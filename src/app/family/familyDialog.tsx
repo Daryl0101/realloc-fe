@@ -4,7 +4,8 @@ import {
   Gender,
   HalalStatus,
   Status,
-  parseDateStringToFormattedDate,
+  inputDateFormat,
+  parseDateTimeStringToFormattedDateTime,
 } from "@/src/lib/utils";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -29,15 +30,17 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
-import { addNewFamilyAPICall } from "./addNewFamilyAPICall";
-import { editFamilyAPICall } from "./editFamilyAPICall";
-import { deleteFamilyAPICall } from "./deleteFamilyAPICall";
-import { retrieveFamilyAPICall } from "./retrieveFamilyAPICall";
-import { searchFoodCategoryAPICall } from "../product/searchFoodCategoryAPICall";
+import { addNewFamilyAPICall } from "../apiCall/family/addNewFamilyAPICall";
+import { editFamilyAPICall } from "../apiCall/family/editFamilyAPICall";
+import { deleteFamilyAPICall } from "../apiCall/family/deleteFamilyAPICall";
+import { retrieveFamilyAPICall } from "../apiCall/family/retrieveFamilyAPICall";
+import { searchFoodCategoryAPICall } from "../apiCall/sysref/searchFoodCategoryAPICall";
 import { MuiTelInput } from "mui-tel-input";
-import { retrieveActivityLevelDropdownAPICall } from "./retrieveActivityLevelDropdownAPICall";
+import { retrieveActivityLevelDropdownAPICall } from "../apiCall/family/retrieveActivityLevelDropdownAPICall";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
+import { DatePicker } from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from "dayjs";
 
 type PersonInfo = {
   id: string | null;
@@ -45,6 +48,7 @@ type PersonInfo = {
   lastName: string;
   gender: string;
   birthdate: string;
+  originalBirthdate: string;
   height: string;
   weight: string;
   activityLevel: string;
@@ -92,7 +96,8 @@ var memberParamsDefaultState: PersonInfo = {
   firstName: "",
   lastName: "",
   gender: "",
-  birthdate: "",
+  birthdate: dayjs().format(),
+  originalBirthdate: dayjs().format(),
   height: "0.00",
   weight: "0.00",
   activityLevel: "1",
@@ -183,7 +188,12 @@ const FamilyDialog = ({
       enqueueSnackbar(`Family ${result.familyNo} retrieved successfully`, {
         variant: "success",
       });
-      familyParamsDefaultState = result;
+      familyParamsDefaultState = {
+        ...result,
+        members: result.members.map((m) => {
+          return { ...m, originalBirthdate: m.birthdate };
+        }),
+      };
       handleResetDialog();
     } else if (result.error) {
       if (typeof result.error === "string")
@@ -250,10 +260,11 @@ const FamilyDialog = ({
         firstName: "",
         lastName: "",
         gender: "",
-        birthdate: "",
+        birthdate: dayjs().format(),
+        originalBirthdate: dayjs().format(),
         height: "0.00",
         weight: "0.00",
-        activityLevel: "0",
+        activityLevel: "1",
       };
 
       familyParamsDefaultState = {
@@ -346,6 +357,19 @@ const FamilyDialog = ({
       ...prevState,
       members: prevState.members.map((m, i) =>
         i === index ? { ...m, [e.target.name]: e.target.value } : m
+      ),
+    }));
+  };
+
+  const handleNestedBirthdateFieldChange = (
+    value: Dayjs | null,
+    index: number
+  ) => {
+    if (!value) return;
+    setFamilyParamsState((prevState) => ({
+      ...prevState,
+      members: prevState.members.map((m, i) =>
+        i === index ? { ...m, birthdate: value.format() } : m
       ),
     }));
   };
@@ -538,7 +562,8 @@ const FamilyDialog = ({
               InputProps={{
                 readOnly: pageState.action === Action.VIEW,
               }}
-              disabled={
+              disabled={pageState.status === Status.LOADING}
+              disableDropdown={
                 pageState.status === Status.LOADING ||
                 pageState.action === Action.VIEW
               }
@@ -653,7 +678,10 @@ const FamilyDialog = ({
                   />
                 ));
               }}
-              disabled={pageState.status === Status.LOADING}
+              disabled={
+                pageState.status === Status.LOADING ||
+                pageState.action === Action.VIEW
+              }
             />
           </Grid>
           <Grid item xs={12}>
@@ -759,7 +787,7 @@ const FamilyDialog = ({
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField
+                    {/* <TextField
                       name="birthdate"
                       variant="outlined"
                       label="Birthdate"
@@ -775,6 +803,49 @@ const FamilyDialog = ({
                       InputProps={{
                         readOnly: pageState.action === Action.VIEW,
                       }}
+                      disabled={pageState.status === Status.LOADING}
+                    /> */}
+                    <DatePicker
+                      name="birthdate"
+                      label="Birthdate"
+                      value={dayjs(member.birthdate)}
+                      onChange={(value) => {
+                        handleNestedBirthdateFieldChange(value, index);
+                      }}
+                      format={inputDateFormat}
+                      maxDate={
+                        // dayjs(member.originalBirthdate)
+                        dayjs()
+                      }
+                      slotProps={{
+                        field: {
+                          onBlur: (e) => {
+                            if (
+                              !dayjs(member.birthdate).isValid() ||
+                              dayjs(member.birthdate) >
+                                // dayjs(member.originalBirthdate)
+                                dayjs()
+                            )
+                              setFamilyParamsState((prevState) => ({
+                                ...prevState,
+                                members: prevState.members.map((m, i) => {
+                                  return i === index
+                                    ? {
+                                        ...m,
+                                        // birthdate: member.originalBirthdate,
+                                        birthdate: dayjs().format(),
+                                      }
+                                    : m;
+                                }),
+                              }));
+                          },
+                        },
+                        textField: {
+                          fullWidth: true,
+                          required: true,
+                        },
+                      }}
+                      readOnly={pageState.action === Action.VIEW}
                       disabled={pageState.status === Status.LOADING}
                     />
                   </Grid>
@@ -833,10 +904,6 @@ const FamilyDialog = ({
                           valueLabelDisplay={
                             pageState.action === Action.VIEW ? "on" : "auto"
                           }
-                          getAriaLabel={(value) => {
-                            console.log(value);
-                            return "";
-                          }}
                           onChange={(e, newValue) => {
                             setFamilyParamsState((prevState) => ({
                               ...prevState,
@@ -897,28 +964,30 @@ const FamilyDialog = ({
           {[Action.ADD, Action.EDIT].includes(pageState.action) ? (
             <Grid item xs={12}>
               <Tooltip title="Add member" placement="top">
-                <Button
-                  fullWidth
-                  sx={{
-                    border: 1,
-                    borderColor: "grey.500",
-                    borderStyle: "dashed",
-                  }}
-                  onClick={(e) => {
-                    setFamilyParamsState((prevState) => {
-                      return {
-                        ...prevState,
-                        members: [
-                          ...prevState.members,
-                          memberParamsDefaultState,
-                        ],
-                      };
-                    });
-                  }}
-                  disabled={pageState.status === Status.LOADING}
-                >
-                  <AddIcon />
-                </Button>
+                <span>
+                  <Button
+                    fullWidth
+                    sx={{
+                      border: 1,
+                      borderColor: "grey.500",
+                      borderStyle: "dashed",
+                    }}
+                    onClick={(e) => {
+                      setFamilyParamsState((prevState) => {
+                        return {
+                          ...prevState,
+                          members: [
+                            ...prevState.members,
+                            memberParamsDefaultState,
+                          ],
+                        };
+                      });
+                    }}
+                    disabled={pageState.status === Status.LOADING}
+                  >
+                    <AddIcon />
+                  </Button>
+                </span>
               </Tooltip>
             </Grid>
           ) : null}
@@ -959,7 +1028,7 @@ const FamilyDialog = ({
                       label={field.label}
                       value={
                         ["modifiedAt", "createdAt"].includes(field.key)
-                          ? parseDateStringToFormattedDate(field.value)
+                          ? parseDateTimeStringToFormattedDateTime(field.value)
                           : field.value
                       }
                       name={field.key}

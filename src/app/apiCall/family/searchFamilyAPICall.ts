@@ -1,51 +1,55 @@
 "use server";
 
-import GlobalConfig from "../../../app.config";
+import GlobalConfig from "../../../../app.config";
 import { getServerSession } from "next-auth";
 
-import { options } from "../api/auth/[...nextauth]/options";
+import { options } from "../../api/auth/[...nextauth]/options";
 import {
   ApiResponse,
   HalalStatus,
   PaginationRequest,
   PaginationResponse,
   getErrorMessage,
-} from "../../lib/utils";
+} from "../../../lib/utils";
 
 type SearchParams = {
-  productNo: string;
-  productNameOrDescription: string;
+  familyNo: string;
+  familyOrPersonName: string;
   halalStatus: HalalStatus;
 };
 
-type ProductItem = {
+type FamilyItem = {
   id: string;
   sequence: number | null;
-  product_no: string;
+  family_no: string;
   name: string;
-  description: string;
+  last_received_date: string | null;
   is_halal: boolean;
 };
 
-const productSearchAPI = `${GlobalConfig.baseAPIPath}/master-data/products/search`;
+const familySearchAPI = `${GlobalConfig.baseAPIPath}/master-data/families/search`;
 
-export const searchProductAPICall = async (
-  { productNo, productNameOrDescription, halalStatus }: SearchParams,
+export const searchFamilyAPICall = async (
+  {
+    familyNo,
+    familyOrPersonName: familyOrPersonName,
+    halalStatus,
+  }: SearchParams,
   pagination: PaginationRequest
 ) => {
   const session = await getServerSession(options);
   var res = null;
   try {
     res = await fetch(
-      productSearchAPI +
+      familySearchAPI +
         "?" +
         new URLSearchParams({
           page_no: (pagination.page_no + 1).toString(),
           page_size: pagination.page_size.toString(),
           sort_column: pagination.sort_column,
           sort_order: pagination.sort_order.toString(),
-          product_no: productNo,
-          product_name_or_description: productNameOrDescription,
+          family_no: familyNo,
+          family_or_person_name: familyOrPersonName,
           halal_status: halalStatus.toString(),
         }),
       {
@@ -60,7 +64,7 @@ export const searchProductAPICall = async (
     return { error: getErrorMessage(error) };
   }
 
-  const result: ApiResponse<PaginationResponse<ProductItem>> = await res.json();
+  const result: ApiResponse<PaginationResponse<FamilyItem>> = await res.json();
 
   if (!res.ok && result.errors && result.model === null) {
     return {

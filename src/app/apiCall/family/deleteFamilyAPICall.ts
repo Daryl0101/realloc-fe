@@ -1,8 +1,8 @@
 "use server";
 import { getServerSession } from "next-auth";
-import GlobalConfig from "../../../app.config";
-import { options } from "../api/auth/[...nextauth]/options";
-import { ApiResponse, HalalStatus, getErrorMessage } from "../../lib/utils";
+import GlobalConfig from "../../../../app.config";
+import { options } from "../../api/auth/[...nextauth]/options";
+import { ApiResponse, HalalStatus, getErrorMessage } from "../../../lib/utils";
 
 export const deleteFamilyAPICall = async (id: string | null) => {
   const session = await getServerSession(options);

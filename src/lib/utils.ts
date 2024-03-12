@@ -62,6 +62,10 @@ export type DropdownItem = {
   name: string;
 };
 
+export const inputDateFormat = "DD/MM/YYYY";
+
+export const apiDateFormat = "YYYY-MM-DD";
+
 export const paginationResponseDefaultState: PaginationResponse<null> = {
   total_page: 1,
   current_page: 1,
@@ -106,13 +110,42 @@ export const getErrorMessage = (error: unknown): string => {
   return message;
 };
 
-export const parseDateStringToFormattedDate = (dateString: string) => {
-  return new Date(dateString).toLocaleString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+// Return Format: "dd Mon yyyy, hh:mm AM/PM"
+export const parseDateTimeStringToFormattedDateTime = (
+  dateTimeString: string
+) => {
+  // return new Date(dateTimeString).toLocaleString("en-GB", {
+  //   weekday: "long",
+  //   year: "numeric",
+  //   month: "long",
+  //   day: "numeric",
+  //   hour: "numeric",
+  //   minute: "numeric",
+  // });
+  return new Date(dateTimeString).toLocaleString("en-GB", {
+    hour12: true,
+    dateStyle: "medium",
+    timeStyle: "short",
   });
+};
+
+// Return Format: "Weekday, dd Month yyyy"
+export const parseDateStringToFormattedDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-GB", {
+    dateStyle: "full",
+  });
+};
+
+// Return Format: "dd/mm/yyyy"
+export const getCurrentDateString = () => {
+  const today = new Date().toLocaleDateString("en-GB");
+  return today;
+};
+
+// Return Format: "dd/mm/yyyy, hh:mm:ss"
+export const getCurrentDateTimeString = () => {
+  const now = new Date().toLocaleString("en-GB");
+  return now;
 };
 
 // User defined type guard (incomplete)

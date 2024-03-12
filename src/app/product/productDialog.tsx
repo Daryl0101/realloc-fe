@@ -2,7 +2,7 @@ import {
   Action,
   HalalStatus,
   Status,
-  parseDateStringToFormattedDate,
+  parseDateTimeStringToFormattedDateTime,
 } from "@/src/lib/utils";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -25,11 +25,12 @@ import {
   Tooltip,
 } from "@mui/material";
 import React, { useEffect } from "react";
-import { searchFoodCategoryAPICall } from "./searchFoodCategoryAPICall";
-import { addNewProductAPICall } from "./addNewProductAPICall";
-import { editProductAPICall } from "./editProductAPICall";
-import { deleteProductAPICall } from "./deleteProductAPICall";
-import { retrieveProductAPICall } from "./retrieveProductAPICall";
+import { searchFoodCategoryAPICall } from "../apiCall/sysref/searchFoodCategoryAPICall";
+import { addNewProductAPICall } from "../apiCall/product/addNewProductAPICall";
+import { editProductAPICall } from "../apiCall/product/editProductAPICall";
+import { deleteProductAPICall } from "../apiCall/product/deleteProductAPICall";
+import { retrieveProductAPICall } from "../apiCall/product/retrieveProductAPICall";
+import { editProductNutritionAPICall } from "../apiCall/product/editProductNutritionAPICall";
 
 type FoodCategory = {
   id: number;
@@ -60,10 +61,10 @@ type Params = {
 };
 
 type Props = {
-  pageState: { status: Status; action: Action; id: string | null };
+  pageState: { status: Status; action: Action | "INBOUND"; id: string | null };
   setPageState: React.Dispatch<
     React.SetStateAction<{
-      action: Action;
+      action: Action | "INBOUND";
       status: Status;
       id: string | null;
     }>
@@ -270,9 +271,22 @@ const ProductDialog = ({
         result = await addNewProductAPICall(productParamsState);
         break;
       case Action.EDIT:
-        result = await editProductAPICall({
-          ...productParamsState,
+        // result = await editProductAPICall({
+        //   ...productParamsState,
+        //   id: pageState.id,
+        // });
+        result = await editProductNutritionAPICall({
           id: pageState.id,
+          servingSize: productParamsState.servingSize,
+          calorie: productParamsState.calorie,
+          carbohydrate: productParamsState.carbohydrate,
+          protein: productParamsState.protein,
+          fat: productParamsState.fat,
+          sugar: productParamsState.sugar,
+          fiber: productParamsState.fiber,
+          saturatedFat: productParamsState.saturatedFat,
+          cholesterol: productParamsState.cholesterol,
+          sodium: productParamsState.sodium,
         });
         break;
       case Action.DELETE:
@@ -312,7 +326,11 @@ const ProductDialog = ({
     //   action: Action.NONE,
     //   status: Status.CLOSED,
     // }));
-    if ([Action.VIEW, Action.EDIT].includes(pageState.action)) {
+    if (
+      Array<Action | string>(Action.VIEW, Action.EDIT).includes(
+        pageState.action
+      )
+    ) {
       productParamsDefaultState = {
         productNo: "",
         productName: "",
@@ -489,7 +507,9 @@ const ProductDialog = ({
 
   useEffect(() => {
     if (
-      [Action.VIEW, Action.EDIT].includes(pageState.action) &&
+      Array<Action | string>(Action.VIEW, Action.EDIT).includes(
+        pageState.action
+      ) &&
       pageState.status === Status.OPEN
     ) {
       handleResetDialog();
@@ -537,8 +557,9 @@ const ProductDialog = ({
   return (
     <Dialog
       open={
-        [Action.ADD, Action.VIEW, Action.EDIT].includes(pageState.action) &&
-        [Status.OPEN, Status.LOADING].includes(pageState.status)
+        Array<Action | string>(Action.ADD, Action.VIEW, Action.EDIT).includes(
+          pageState.action
+        ) && [Status.OPEN, Status.LOADING].includes(pageState.status)
       }
       onClose={handleDialogClose}
       PaperProps={{
@@ -566,7 +587,10 @@ const ProductDialog = ({
               InputProps={{
                 readOnly: pageState.action === Action.VIEW,
               }}
-              disabled={pageState.status === Status.LOADING}
+              disabled={
+                pageState.status === Status.LOADING ||
+                pageState.action === Action.EDIT
+              }
             />
           </Grid>
           <Grid item xs={12}>
@@ -586,7 +610,10 @@ const ProductDialog = ({
               InputProps={{
                 readOnly: pageState.action === Action.VIEW,
               }}
-              disabled={pageState.status === Status.LOADING}
+              disabled={
+                pageState.status === Status.LOADING ||
+                pageState.action === Action.EDIT
+              }
             />
           </Grid>
           <Grid item xs={12}>
@@ -651,7 +678,10 @@ const ProductDialog = ({
                   />
                 ));
               }}
-              disabled={pageState.status === Status.LOADING}
+              disabled={
+                pageState.status === Status.LOADING ||
+                pageState.action === Action.EDIT
+              }
             />
             {/* <FormControl fullWidth>
                 <InputLabel id="categories-select-field-label">
@@ -687,7 +717,8 @@ const ProductDialog = ({
               value={productParamsState.halalStatus}
               disabled={
                 pageState.status === Status.LOADING ||
-                pageState.action === Action.VIEW
+                pageState.action === Action.VIEW ||
+                pageState.action === Action.EDIT
               }
             >
               {[HalalStatus.Halal, HalalStatus["Non Halal"]].map((value) => {
@@ -728,7 +759,9 @@ const ProductDialog = ({
               />
             </Grid>
           ))}
-          {[Action.VIEW, Action.EDIT].includes(pageState.action) ? (
+          {Array<Action | string>(Action.VIEW, Action.EDIT).includes(
+            pageState.action
+          ) ? (
             <>
               <Grid item xs={12}>
                 <Divider></Divider>
@@ -765,7 +798,7 @@ const ProductDialog = ({
                       label={field.label}
                       value={
                         ["modifiedAt", "createdAt"].includes(field.key)
-                          ? parseDateStringToFormattedDate(field.value)
+                          ? parseDateTimeStringToFormattedDateTime(field.value)
                           : field.value
                       }
                       name={field.key}
@@ -789,7 +822,9 @@ const ProductDialog = ({
         >
           <span>Cancel</span>
         </LoadingButton>
-        {[Action.ADD, Action.EDIT].includes(pageState.action) ? (
+        {Array<Action | string>(Action.ADD, Action.EDIT).includes(
+          pageState.action
+        ) ? (
           <LoadingButton
             loading={pageState.status === Status.LOADING}
             variant="outlined"
@@ -799,7 +834,9 @@ const ProductDialog = ({
             <span>Reset</span>
           </LoadingButton>
         ) : null}
-        {[Action.VIEW, Action.EDIT].includes(pageState.action) ? (
+        {Array<Action | string>(Action.VIEW, Action.EDIT).includes(
+          pageState.action
+        ) ? (
           <LoadingButton
             loading={pageState.status === Status.LOADING}
             variant="contained"
