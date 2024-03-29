@@ -200,9 +200,7 @@ const Family = () => {
       width: 150,
       headerAlign: "center",
       align: "center",
-      sortable: false,
-      filterable: false,
-      hideable: false,
+      type: "actions",
       renderCell: (params) => {
         return (
           <FamilyActions

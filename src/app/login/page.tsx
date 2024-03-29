@@ -30,7 +30,7 @@ const LoginPage = async ({
     >
       <Paper elevation={3} sx={{ p: 4, maxWidth: 400 }}>
         <Typography variant="h3" align="center" color="primary" pb={2}>
-          Realloc
+          ReAlloc
         </Typography>
         <Divider />
         <Typography variant="h5" align="center" pt={2}>

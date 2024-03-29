@@ -204,9 +204,7 @@ const Product = () => {
       width: 150,
       headerAlign: "center",
       align: "center",
-      sortable: false,
-      filterable: false,
-      hideable: false,
+      type: "actions",
       renderCell: (params) => {
         return (
           <ProductActions
@@ -249,7 +247,13 @@ const Product = () => {
           {/* <Grid container spacing={2} justifySelf="flex-end"> */}
           {/* <Grid item xs={6}> */}
           <Tooltip
-            title="Select a product from the table below to start inbound"
+            title={
+              rowSelectionModel.length == 1
+                ? "Start inbound"
+                : rowSelectionModel.length > 1
+                ? "Select only one product from the table below"
+                : "Select a product from the table below to start inbound"
+            }
             placement="top"
           >
             <Box>

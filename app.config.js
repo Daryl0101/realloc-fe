@@ -3,4 +3,5 @@
 
 module.exports = {
   baseAPIPath: "http://localhost:8000/api/v1",
+  baseWsPath: "ws://localhost:8000/ws",
 };

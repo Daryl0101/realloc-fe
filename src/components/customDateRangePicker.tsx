@@ -17,6 +17,7 @@ const CustomDateRangePicker = ({
   dateStart,
   dateEnd,
   onSetDate,
+  minDate = null,
   variant = "flexbox",
   disabled = false,
 }: {
@@ -25,6 +26,7 @@ const CustomDateRangePicker = ({
   dateStart: string | null;
   dateEnd: string | null;
   onSetDate: (dateStart: string | null, dateEnd: string | null) => void;
+  minDate?: Dayjs | null;
   variant?: "flexbox" | "grid";
   disabled?: boolean;
 }) => {
@@ -45,6 +47,7 @@ const CustomDateRangePicker = ({
     // variant === "flexbox" ? (
     <Box display="flex">
       <DatePicker
+        minDate={minDate !== null ? minDate : null}
         name={`${formName}Start`}
         label={`${formLabel} Start`}
         format={inputDateFormat}

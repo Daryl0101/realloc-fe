@@ -194,7 +194,7 @@ export default function Navigation(props: { session: Session }) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Realloc
+            ReAlloc
           </Typography>
         </Toolbar>
       </AppBar>

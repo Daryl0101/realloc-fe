@@ -34,6 +34,34 @@ export enum HalalStatus {
   "Non Halal",
 }
 
+export enum AllocationStatus {
+  CREATED = "CREATED",
+  ONGOING = "ONGOING",
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+  COMPLETED = "COMPLETED",
+}
+
+export enum AllocationFamilyStatus {
+  SERVED = "SERVED",
+  NOT_SERVED = "NOT_SERVED",
+  PENDING = "PENDING",
+  ACCEPTED = "ACCEPTED",
+  REJECTED = "REJECTED",
+}
+
+export const NutrientWeight = {
+  CALORIE: 3,
+  CARBOHYDRATE: 2,
+  PROTEIN: 2,
+  FAT: 2,
+  FIBER: 1,
+  SUGAR: 1,
+  SATURATED_FAT: 1,
+  CHOLESTEROL: 1,
+  SODIUM: 1,
+};
+
 export type ApiResponse<T> = {
   model: T | null;
   status_name: string;

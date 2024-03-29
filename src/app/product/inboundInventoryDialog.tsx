@@ -516,7 +516,7 @@ const InboundInventoryDialog = ({
                   </Grid>
                   <Grid item xs={12}>
                     <Autocomplete
-                      readOnly={pageState.action === Action.VIEW}
+                      readOnly={true}
                       id="categories-select-field"
                       multiple
                       getOptionLabel={(option) => option.name}

@@ -1,4 +1,4 @@
-import { Box, styled } from "@mui/material";
+import { Box, styled, Typography } from "@mui/material";
 
 const NoRowsOverlay = styled("div")(({ theme }) => ({
   display: "flex",
@@ -24,7 +24,15 @@ const NoRowsOverlay = styled("div")(({ theme }) => ({
   },
 }));
 
-function CustomNoRowsOverlay() {
+function CustomNoRowsOverlay({
+  noRowsTitle,
+  noRowsImage,
+  noRowsDescription,
+}: {
+  noRowsTitle?: string;
+  noRowsImage?: string;
+  noRowsDescription?: string;
+}) {
   return (
     <NoRowsOverlay>
       <svg
@@ -66,7 +74,16 @@ function CustomNoRowsOverlay() {
           </g>
         </g>
       </svg>
-      <Box sx={{ mt: 1 }}>No Rows</Box>
+      <Box sx={{ mt: 1 }}>{noRowsTitle ?? "No Rows"}</Box>
+      {noRowsDescription ? (
+        <Box>
+          {
+            <Typography variant="caption" color="textSecondary">
+              {noRowsDescription}
+            </Typography>
+          }
+        </Box>
+      ) : null}
     </NoRowsOverlay>
   );
 }

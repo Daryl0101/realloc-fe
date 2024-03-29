@@ -40,7 +40,7 @@ import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
 import InventoryActions from "./inventoryActions";
 import { LoadingButton } from "@mui/lab";
 import { searchInventoryAPICall } from "../apiCall/inventory/searchInventoryAPICall";
-import CustomDateRangePicker from "@/src/components/dateRangePicker";
+import CustomDateRangePicker from "@/src/components/customDateRangePicker";
 import AnimatedArrowRightIcon from "@/src/components/animatedArrowRightIcon";
 import AdjustInventoryDialog from "./adjustInventoryDialog";
 import ViewInventoryDialog from "./viewInventoryDialog";
@@ -253,12 +253,14 @@ const Inventory = () => {
     {
       field: "total_qty",
       headerName: "Total Quantity",
+      align: "center",
       flex: 1,
       minWidth: 150,
     },
     {
       field: "available_qty",
       headerName: "Available Quantity",
+      align: "center",
       flex: 1,
       minWidth: 150,
     },
@@ -276,9 +278,7 @@ const Inventory = () => {
       width: 150,
       headerAlign: "center",
       align: "center",
-      sortable: false,
-      filterable: false,
-      hideable: false,
+      type: "actions",
       renderCell: (params) => {
         return (
           <InventoryActions

@@ -25,6 +25,7 @@ type SearchParams = {
   receivedDateStart: string | null;
   receivedDateEnd: string | null;
   halalStatus: HalalStatus;
+  allowedForAllocationOnly?: boolean;
 };
 
 type ProductItem = {
@@ -72,6 +73,7 @@ export const searchInventoryAPICall = async (
     storage_no: params.storageNo,
     storage_description: params.storageDescription,
     halal_status: params.halalStatus.toString(),
+    allowed_for_allocation_only: params.allowedForAllocationOnly ?? false,
   };
 
   if (params.expirationDateStart !== null)

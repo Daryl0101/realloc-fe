@@ -28,6 +28,7 @@ export default async function RootLayout({
               component="main"
               sx={{
                 overflow: "hidden",
+                // height: "100vh",
                 flexGrow: 1,
                 p: 3,
                 marginTop: 8,
