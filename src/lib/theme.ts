@@ -2,6 +2,7 @@
 "use client";
 import type {} from "@mui/lab/themeAugmentation";
 import { createTheme } from "@mui/material";
+import { light } from "@mui/material/styles/createPalette";
 
 const theme = createTheme({
   palette: {
@@ -17,6 +18,10 @@ const theme = createTheme({
       // dark: "#ba000d",
       contrastText: "#fff",
     },
+    // background: {
+    //   default: "#f5f5f5",
+    //   paper: "#fff",
+    // },
     mode: "dark",
   },
   components: {

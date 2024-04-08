@@ -50,6 +50,13 @@ export enum AllocationFamilyStatus {
   REJECTED = "REJECTED",
 }
 
+export enum PackageStatus {
+  NEW = "NEW",
+  CANCELLED = "CANCELLED",
+  PACKED = "PACKED",
+  DELIVERED = "DELIVERED",
+}
+
 export const NutrientWeight = {
   CALORIE: 3,
   CARBOHYDRATE: 2,

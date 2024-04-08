@@ -3,6 +3,8 @@ import { Box, Divider, Paper, Typography } from "@mui/material";
 import { options } from "../api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { AiOutlineTrademark } from "react-icons/ai";
+import theme from "@/src/lib/theme";
 
 const LoginPage = async ({
   params,
@@ -29,9 +31,21 @@ const LoginPage = async ({
       bgcolor="background.default"
     >
       <Paper elevation={3} sx={{ p: 4, maxWidth: 400 }}>
-        <Typography variant="h3" align="center" color="primary" pb={2}>
-          ReAlloc
-        </Typography>
+        <Box display="flex" height="fit-content" justifyContent="center">
+          <Typography variant="h3" align="center" color="primary" pb={2}>
+            ReAlloc
+          </Typography>
+          <AiOutlineTrademark
+            style={{
+              color: "#3f50b5",
+              alignSelf: "start",
+              marginTop: 4,
+              marginLeft: 2,
+              // fontSize: 12,
+            }}
+          />
+          {/* <PiTrademarkLight style={{ alignSelf: "start" }} /> */}
+        </Box>
         <Divider />
         <Typography variant="h5" align="center" pt={2}>
           Welcome

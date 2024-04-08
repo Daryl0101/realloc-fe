@@ -16,6 +16,7 @@ type SearchParams = {
   familyNo: string;
   familyOrPersonName: string;
   halalStatus: HalalStatus;
+  allocationCreatableOnly?: boolean;
 };
 
 type FamilyItem = {
@@ -34,6 +35,7 @@ export const searchFamilyAPICall = async (
     familyNo,
     familyOrPersonName: familyOrPersonName,
     halalStatus,
+    allocationCreatableOnly = false,
   }: SearchParams,
   pagination: PaginationRequest
 ) => {
@@ -51,6 +53,7 @@ export const searchFamilyAPICall = async (
           family_no: familyNo,
           family_or_person_name: familyOrPersonName,
           halal_status: halalStatus.toString(),
+          allocation_creatable_only: allocationCreatableOnly.toString(),
         }),
       {
         method: "GET",

@@ -193,7 +193,44 @@ const ViewAllocationFamiliesSection = ({
       needed: number;
       allocated: number;
     };
-  } | null>(null);
+  }>({
+    Calorie: {
+      needed: 0,
+      allocated: 0,
+    },
+    Carbohydrate: {
+      needed: 0,
+      allocated: 0,
+    },
+    Protein: {
+      needed: 0,
+      allocated: 0,
+    },
+    Fat: {
+      needed: 0,
+      allocated: 0,
+    },
+    Fiber: {
+      needed: 0,
+      allocated: 0,
+    },
+    Sugar: {
+      needed: 0,
+      allocated: 0,
+    },
+    "Saturated Fat": {
+      needed: 0,
+      allocated: 0,
+    },
+    Cholesterol: {
+      needed: 0,
+      allocated: 0,
+    },
+    Sodium: {
+      needed: 0,
+      allocated: 0,
+    },
+  });
   const aifDataGridRef = useRef<HTMLDivElement>(null);
   const [dataGridHeight, setDataGridHeight] = useState(0);
 
@@ -547,7 +584,44 @@ const ViewAllocationFamiliesSection = ({
       });
     } else {
       setAllocationFamilyInventories([]);
-      setNutritionDetails(null);
+      setNutritionDetails({
+        Calorie: {
+          needed: 0,
+          allocated: 0,
+        },
+        Carbohydrate: {
+          needed: 0,
+          allocated: 0,
+        },
+        Protein: {
+          needed: 0,
+          allocated: 0,
+        },
+        Fat: {
+          needed: 0,
+          allocated: 0,
+        },
+        Fiber: {
+          needed: 0,
+          allocated: 0,
+        },
+        Sugar: {
+          needed: 0,
+          allocated: 0,
+        },
+        "Saturated Fat": {
+          needed: 0,
+          allocated: 0,
+        },
+        Cholesterol: {
+          needed: 0,
+          allocated: 0,
+        },
+        Sodium: {
+          needed: 0,
+          allocated: 0,
+        },
+      });
     }
   }, [rowSelectionModel, searchResultState]);
 
@@ -675,7 +749,7 @@ const ViewAllocationFamiliesSection = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {nutritionDetails !== null ? (
+                  {rowSelectionModel.length === 1 ? (
                     Object.keys(nutritionDetails).map((key) => (
                       <TableRow key={key}>
                         <TableCell>{key}</TableCell>
@@ -759,7 +833,7 @@ const ViewAllocationFamiliesSection = ({
                                         : theme.palette.mode === "light"
                                         ? green[500]
                                         : green[800],
-                                    transition: "none",
+                                    // transition: "none",
                                     transformOrigin: "left",
                                   },
                                 }}

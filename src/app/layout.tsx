@@ -10,6 +10,7 @@ import Navigation from "../components/navigation";
 import { getServerSession } from "next-auth";
 import { options } from "./api/auth/[...nextauth]/options";
 import { CssBaseline } from "@mui/material";
+import theme from "../lib/theme";
 
 export default async function RootLayout({
   children,

@@ -108,7 +108,7 @@ const CreateAllocationDialog = ({
       status: Status.CLOSED,
       id: null,
     });
-    setActiveStep(0);
+    // setActiveStep(0);
   };
 
   const handleResetDialog = () => {
@@ -125,6 +125,7 @@ const CreateAllocationDialog = ({
 
   const sections = [
     <CreateAllocationFamilySection
+      key={0}
       enqueueSnackbar={enqueueSnackbar}
       pageState={pageState}
       setPageState={setPageState}
@@ -138,6 +139,7 @@ const CreateAllocationDialog = ({
     />,
 
     <CreateAllocationInventoriesSection
+      key={1}
       enqueueSnackbar={enqueueSnackbar}
       pageState={pageState}
       setPageState={setPageState}
@@ -150,6 +152,7 @@ const CreateAllocationDialog = ({
       container={slideRef.current}
     />,
     <CreateAllocationConstraintsSection
+      key={2}
       enqueueSnackbar={enqueueSnackbar}
       pageState={pageState}
       setPageState={setPageState}

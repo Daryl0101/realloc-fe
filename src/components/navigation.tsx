@@ -25,10 +25,13 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { AiOutlineTrademark } from "react-icons/ai";
+import { PiTrademarkLight } from "react-icons/pi";
 import logout from "../lib/logout";
 import { useSession } from "next-auth/react";
 import { Role } from "../lib/utils";
 import { Session } from "next-auth";
+import { Box } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -104,7 +107,7 @@ const Drawer = styled(MuiDrawer, {
 export default function Navigation(props: { session: Session }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  useSession();
+  // useSession();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -193,9 +196,20 @@ export default function Navigation(props: { session: Session }) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            ReAlloc
-          </Typography>
+          <Box display="flex" height="fit-content">
+            <Typography variant="h6" noWrap component="div">
+              ReAlloc
+            </Typography>
+            <AiOutlineTrademark
+              style={{
+                alignSelf: "start",
+                marginTop: 4,
+                marginLeft: 2,
+                fontSize: 12,
+              }}
+            />
+            {/* <PiTrademarkLight style={{ alignSelf: "start" }} /> */}
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>

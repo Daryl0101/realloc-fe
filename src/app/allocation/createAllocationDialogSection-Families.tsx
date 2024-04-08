@@ -131,7 +131,7 @@ const CreateAllocationFamilySection = ({
     }));
 
     const result = await searchFamilyAPICall(
-      searchParamsState,
+      { ...searchParamsState, allocationCreatableOnly: true },
       paginationRequestState
     );
     if ("total_page" in result) {
