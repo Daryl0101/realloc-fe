@@ -113,8 +113,9 @@ const Package = () => {
   }>({ action: Action.NONE, status: Status.CLOSED, id: null });
   const [rowSelectionModel, setRowSelectionModel] =
     React.useState<GridRowSelectionModel>([]);
-  const [webSocketCallRefresh, setWebSocketCallRefresh] =
-    React.useState<string>("");
+  const [webSocketCallRefresh, setWebSocketCallRefresh] = React.useState<
+    string[]
+  >([]);
   const [userRole, setUserRole] = React.useState<Role>(Role.volunteer);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -312,13 +313,17 @@ const Package = () => {
 
   useEffect(() => {
     console.log(webSocketCallRefresh);
-    if (
-      searchResultState
-        .map((item) => item.id.toString())
-        .includes(webSocketCallRefresh.toString())
-    )
-      searchPackage();
-    setWebSocketCallRefresh("");
+    if (webSocketCallRefresh.length > 0) {
+      if (
+        searchResultState
+          .map((item) => item.id.toString())
+          .filter((item) =>
+            webSocketCallRefresh.map((item) => item.toString()).includes(item)
+          )
+      )
+        searchPackage();
+      setWebSocketCallRefresh([]);
+    }
   }, [webSocketCallRefresh]);
 
   return (

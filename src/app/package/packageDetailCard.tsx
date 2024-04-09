@@ -65,7 +65,7 @@ type Props = {
   setRowSelectionModel: React.Dispatch<
     React.SetStateAction<GridRowSelectionModel>
   >;
-  webSocketCallRefresh: string;
+  webSocketCallRefresh: string[];
   userRole: Role;
 };
 
@@ -281,7 +281,11 @@ const PackageDetailCard = ({
   }, [pageState.id]);
 
   useEffect(() => {
-    if (pageState.id === webSocketCallRefresh) {
+    if (
+      pageState.id !== null &&
+      Array.isArray(webSocketCallRefresh) &&
+      webSocketCallRefresh.map((item) => item.toString()).includes(pageState.id)
+    ) {
       handleDialogClose();
       retrievePackage();
     }
