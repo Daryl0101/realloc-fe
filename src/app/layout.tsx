@@ -1,4 +1,4 @@
-// import "./globals.css";
+import "@/src/lib/globals.css";
 import Providers from "../lib/providers";
 import * as React from "react";
 import Box from "@mui/material/Box";

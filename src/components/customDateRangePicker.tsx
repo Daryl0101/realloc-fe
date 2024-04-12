@@ -36,11 +36,13 @@ const CustomDateRangePicker = ({
   }>({ dateStart: null, dateEnd: null });
 
   useEffect(() => {
-    onSetDate(dateState.dateStart, dateState.dateEnd);
+    if (dateState.dateStart !== dateStart || dateState.dateEnd !== dateEnd)
+      onSetDate(dateState.dateStart, dateState.dateEnd);
   }, [dateState]);
 
   useEffect(() => {
-    setDateState({ dateStart, dateEnd });
+    if (dateState.dateStart !== dateStart || dateState.dateEnd !== dateEnd)
+      setDateState({ dateStart, dateEnd });
   }, [dateStart, dateEnd]);
 
   return (

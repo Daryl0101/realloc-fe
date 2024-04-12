@@ -12,12 +12,10 @@ import generateSequentialNos, {
 } from "@/src/lib/utils";
 import {
   Box,
-  Button,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
-  IconButton,
   LinearProgress,
   Paper,
   Radio,
@@ -26,8 +24,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useEffect } from "react";
 import {
   DataGrid,
@@ -41,9 +37,10 @@ import InventoryActions from "./inventoryActions";
 import { LoadingButton } from "@mui/lab";
 import { searchInventoryAPICall } from "../../apiCall/inventory/searchInventoryAPICall";
 import CustomDateRangePicker from "@/src/components/customDateRangePicker";
-import AnimatedArrowRightIcon from "@/src/components/animatedArrowRightIcon";
 import AdjustInventoryDialog from "./adjustInventoryDialog";
 import ViewInventoryDialog from "./viewInventoryDialog";
+import dayjs from "dayjs";
+import { useSearchParams } from "next/navigation";
 
 type SearchParams = {
   inventoryNo: string;
@@ -99,6 +96,7 @@ const searchParamsDefaultState: SearchParams = {
 };
 
 const Inventory = () => {
+  const queryParams = useSearchParams();
   const [paginationRequestState, setPaginationRequestState] =
     React.useState<PaginationRequest>(paginationRequestDefaultState);
   const [paginationResponseState, setPaginationResponseState] = React.useState<
@@ -106,6 +104,7 @@ const Inventory = () => {
   >(paginationResponseDefaultState);
   const [searchParamsState, setSearchParamsState] =
     React.useState<SearchParams>(searchParamsDefaultState);
+  const [firstRender, setFirstRender] = React.useState<boolean>(true);
   const [searchResultState, setSearchResultState] = React.useState<
     InventoryItem[]
   >([]);
@@ -116,7 +115,13 @@ const Inventory = () => {
   }>({ action: Action.NONE, status: Status.CLOSED, id: null });
   const { enqueueSnackbar } = useSnackbar();
 
-  const searchInventory = async () => {
+  const searchInventory = async (
+    params?: {
+      expirationDateStart: string | null;
+      expirationDateEnd: string | null;
+    } | null
+  ) => {
+    console.log(searchParamsState);
     setPageState((prevState) => ({
       ...prevState,
       action: Action.SEARCH,
@@ -124,7 +129,7 @@ const Inventory = () => {
     }));
 
     const result = await searchInventoryAPICall(
-      searchParamsState,
+      params ? { ...searchParamsDefaultState, ...params } : searchParamsState,
       paginationRequestState
     );
     if ("total_page" in result) {
@@ -293,8 +298,27 @@ const Inventory = () => {
   ];
 
   useEffect(() => {
-    searchInventory();
-  }, [paginationRequestState]);
+    console.log(queryParams.get("expiration_date_start"));
+    console.log(queryParams.get("expiration_date_end"));
+    if (
+      queryParams.has("expiration_date_start") &&
+      queryParams.has("expiration_date_end") &&
+      firstRender
+    ) {
+      setSearchParamsState({
+        ...searchParamsDefaultState,
+        expirationDateStart: queryParams.get("expiration_date_start"),
+        expirationDateEnd: queryParams.get("expiration_date_end"),
+      });
+      searchInventory({
+        expirationDateStart: queryParams.get("expiration_date_start"),
+        expirationDateEnd: queryParams.get("expiration_date_end"),
+      });
+      setFirstRender(false);
+    } else {
+      searchInventory();
+    }
+  }, [paginationRequestState, queryParams]);
 
   return (
     <>
@@ -484,6 +508,11 @@ const Inventory = () => {
             loadingOverlay: LinearProgress,
             toolbar: GridToolbar,
           }}
+          getRowClassName={(params) =>
+            dayjs(params.row.expiration_date) <= dayjs().locale("ms-my")
+              ? "bg-red-400 dark:bg-red-950"
+              : ""
+          }
           sx={{ p: 1 }}
           rows={searchResultState}
           columns={columns}
