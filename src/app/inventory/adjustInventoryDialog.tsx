@@ -1,46 +1,20 @@
-import {
-  Action,
-  DropdownItem,
-  Gender,
-  HalalStatus,
-  Status,
-  inputDateFormat,
-  parseDateTimeStringToFormattedDateTime,
-} from "@/src/lib/utils";
+import { Action, Status } from "@/src/lib/utils";
 import { LoadingButton } from "@mui/lab";
 import {
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Divider,
   Grid,
-  IconButton,
-  Slider,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip,
-  Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { deleteInventoryAPICall } from "../../apiCall/inventory/deleteInventoryAPICall";
 import { retrieveInventoryAPICall } from "../../apiCall/inventory/retrieveInventoryAPICall";
-import { searchFoodCategoryAPICall } from "../../apiCall/sysref/searchFoodCategoryAPICall";
-import { MuiTelInput } from "mui-tel-input";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import AddIcon from "@mui/icons-material/Add";
-import { DatePicker } from "@mui/x-date-pickers";
-import dayjs, { Dayjs } from "dayjs";
-import { inboundNewInventoryAPICall } from "../../apiCall/inventory/inboundNewInventoryAPICall";
 import { adjustInventoryAPICall } from "../../apiCall/inventory/adjustInventoryAPICall";
 import AnimatedArrowRightIcon from "@/src/components/animatedArrowRightIcon";
+import { useSnackbar } from "notistack";
 
 type Params = {
   inventoryNo: string;
@@ -60,7 +34,6 @@ type Props = {
     }>
   >;
   searchInventory: () => void;
-  enqueueSnackbar: (message: string, options: any) => void;
 };
 
 var paramsDefaultState: Params = {
@@ -75,10 +48,10 @@ const AdjustInventoryDialog = ({
   pageState: pageState,
   setPageState: setPageState,
   searchInventory,
-  enqueueSnackbar,
 }: Props) => {
   const [inventoryParamsState, setInventoryParamsState] =
     React.useState<Params>(paramsDefaultState);
+  const { enqueueSnackbar } = useSnackbar();
 
   const retrieveInventory = async () => {
     setPageState((prevState) => ({

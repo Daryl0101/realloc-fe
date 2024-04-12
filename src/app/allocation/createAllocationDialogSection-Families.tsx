@@ -39,6 +39,7 @@ import { LoadingButton } from "@mui/lab";
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
 import { searchFamilyAPICall } from "../../apiCall/family/searchFamilyAPICall";
 import { green } from "@mui/material/colors";
+import { useSnackbar } from "notistack";
 
 type InventoryItem = {
   inventoryId: number;
@@ -85,7 +86,6 @@ type Props = {
       id: string | null;
     }>
   >;
-  enqueueSnackbar: (message: string, options: any) => void;
   allocationCreateRequestState: AllocationCreateRequest;
   setAllocationCreateRequestState: React.Dispatch<
     React.SetStateAction<AllocationCreateRequest>
@@ -100,7 +100,6 @@ type Props = {
 const CreateAllocationFamilySection = ({
   pageState: pageState,
   setPageState: setPageState,
-  enqueueSnackbar,
   allocationCreateRequestState: allocationCreateRequestState,
   setAllocationCreateRequestState,
   isAbleToProceed,
@@ -123,6 +122,7 @@ const CreateAllocationFamilySection = ({
   const [searchResultState, setSearchResultState] = React.useState<
     FamilyItem[]
   >([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const searchFamily = async () => {
     setPageState((prevState) => ({

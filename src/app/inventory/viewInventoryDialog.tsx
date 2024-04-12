@@ -45,6 +45,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { inboundNewInventoryAPICall } from "../../apiCall/inventory/inboundNewInventoryAPICall";
 import { adjustInventoryAPICall } from "../../apiCall/inventory/adjustInventoryAPICall";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useSnackbar } from "notistack";
 
 type FoodCategory = {
   id: number;
@@ -111,7 +112,6 @@ type Props = {
     }>
   >;
   searchInventory: () => void;
-  enqueueSnackbar: (message: string, options: any) => void;
 };
 
 var productParamsDefaultState: ProductParams = {
@@ -169,12 +169,12 @@ const ViewInventoryDialog = ({
   pageState: pageState,
   setPageState: setPageState,
   searchInventory,
-  enqueueSnackbar,
 }: Props) => {
   const [inventoryParamsState, setInventoryParamsState] =
     React.useState<Params>(inventoryParamsDefaultState);
   const [autocompleteFieldStatus, setAutocompleteFieldStatus] =
     React.useState<Status>(Status.OPEN);
+  const { enqueueSnackbar } = useSnackbar();
 
   const retrieveInventory = async () => {
     setPageState((prevState) => ({

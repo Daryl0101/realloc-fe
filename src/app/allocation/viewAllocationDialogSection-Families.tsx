@@ -50,6 +50,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { acceptAllocationFamilyAPICall } from "../../apiCall/allocation/acceptAllocationFamilyAPICall";
 import { rejectAllocationFamilyAPICall } from "../../apiCall/allocation/rejectAllocationFamilyAPICall";
+import { useSnackbar } from "notistack";
 
 type AllocationResponse = {
   allocationNo: string;
@@ -124,7 +125,6 @@ type Props = {
       id: string | null;
     }>
   >;
-  enqueueSnackbar: (message: string, options: any) => void;
   allocationResponseState: AllocationResponse;
   retrieveAllocation: () => Promise<void>;
   webSocketCallRefresh: {
@@ -135,7 +135,6 @@ type Props = {
 const ViewAllocationFamiliesSection = ({
   pageState,
   setPageState,
-  enqueueSnackbar,
   allocationResponseState,
   retrieveAllocation,
   webSocketCallRefresh,
@@ -233,6 +232,7 @@ const ViewAllocationFamiliesSection = ({
   });
   const aifDataGridRef = useRef<HTMLDivElement>(null);
   const [dataGridHeight, setDataGridHeight] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
 
   const searchAllocationFamily = async () => {
     setPageState((prevState) => ({

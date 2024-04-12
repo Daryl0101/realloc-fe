@@ -212,7 +212,6 @@ const Product = () => {
             pageState={pageState}
             setPageState={setPageState}
             searchProduct={searchProduct}
-            enqueueSnackbar={enqueueSnackbar}
           />
         );
       },
@@ -231,13 +230,11 @@ const Product = () => {
         productId={
           rowSelectionModel.length == 1 ? rowSelectionModel[0].toString() : ""
         }
-        enqueueSnackbar={enqueueSnackbar}
       ></InboundInventoryDialog>
       <ProductDialog
         pageState={pageState}
         setPageState={setPageState}
         searchProduct={searchProduct}
-        enqueueSnackbar={enqueueSnackbar}
       ></ProductDialog>
       <Box display="flex" width="100%" justifyContent="space-between" my={2}>
         <Typography variant="h6" mb={2} mr={2} justifySelf="flex-start">

@@ -208,7 +208,6 @@ const Family = () => {
             pageState={pageState}
             setPageState={setPageState}
             searchFamily={searchFamily}
-            enqueueSnackbar={enqueueSnackbar}
           />
         );
       },
@@ -225,7 +224,6 @@ const Family = () => {
         pageState={pageState}
         setPageState={setPageState}
         searchFamily={searchFamily}
-        enqueueSnackbar={enqueueSnackbar}
       ></FamilyDialog>
       <Box display="flex" width="100%" justifyContent="space-between" my={2}>
         <Typography variant="h6" justifySelf="flex-start" mb={2}>

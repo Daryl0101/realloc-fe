@@ -51,6 +51,7 @@ import { LoadingButton } from "@mui/lab";
 import { packPackageAPICall } from "../../apiCall/package/packPackageAPICall";
 import { deliverPackageAPICall } from "../../apiCall/package/deliverPackageAPICall";
 import { cancelPackageAPICall } from "../../apiCall/package/cancelPackageAPICall";
+import { useSnackbar } from "notistack";
 
 type Props = {
   pageState: { status: Status; action: Action; id: string | null };
@@ -61,7 +62,6 @@ type Props = {
       id: string | null;
     }>
   >;
-  enqueueSnackbar: (message: string, options: any) => void;
   setRowSelectionModel: React.Dispatch<
     React.SetStateAction<GridRowSelectionModel>
   >;
@@ -140,7 +140,6 @@ const packageResponseDefaultState = {
 const PackageDetailCard = ({
   pageState: pageState,
   setPageState: setPageState,
-  enqueueSnackbar,
   setRowSelectionModel,
   webSocketCallRefresh,
   userRole,
@@ -152,6 +151,7 @@ const PackageDetailCard = ({
   const [dialogOpenState, setDialogOpenState] = React.useState(false);
   const [cancelReason, setCancelReason] = React.useState<string>("");
   const screenSizeMatch = useMediaQuery(theme.breakpoints.up("sm"));
+  const { enqueueSnackbar } = useSnackbar();
 
   const retrievePackage = async () => {
     setPageState((prevState) => ({

@@ -5,6 +5,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { Action, Status } from "@/src/lib/utils";
+import { useSnackbar } from "notistack";
 
 type ButtonProps = {
   label: string;
@@ -60,7 +61,6 @@ type Props = {
     }>
   >;
   searchInventory: () => void;
-  enqueueSnackbar: (message: string, options?: any) => void;
 };
 
 const InventoryActions = ({
@@ -68,8 +68,9 @@ const InventoryActions = ({
   pageState,
   setPageState,
   searchInventory,
-  enqueueSnackbar,
 }: Props) => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleViewInventory = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {

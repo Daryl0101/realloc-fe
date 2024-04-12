@@ -31,6 +31,7 @@ import { editProductAPICall } from "../../apiCall/product/editProductAPICall";
 import { deleteProductAPICall } from "../../apiCall/product/deleteProductAPICall";
 import { retrieveProductAPICall } from "../../apiCall/product/retrieveProductAPICall";
 import { editProductNutritionAPICall } from "../../apiCall/product/editProductNutritionAPICall";
+import { useSnackbar } from "notistack";
 
 type FoodCategory = {
   id: number;
@@ -70,7 +71,6 @@ type Props = {
     }>
   >;
   searchProduct: () => void;
-  enqueueSnackbar: (message: string, options: any) => void;
 };
 
 var productParamsDefaultState: Params = {
@@ -99,7 +99,6 @@ const ProductDialog = ({
   pageState: pageState,
   setPageState: setPageState,
   searchProduct,
-  enqueueSnackbar,
 }: Props) => {
   const [productParamsState, setProductParamsState] = React.useState<Params>(
     productParamsDefaultState
@@ -109,6 +108,7 @@ const ProductDialog = ({
   );
   const [autocompleteFieldStatus, setAutocompleteFieldStatus] =
     React.useState<Status>(Status.OPEN);
+  const { enqueueSnackbar } = useSnackbar();
 
   const searchFoodCategories = async (searchString: string) => {
     setAutocompleteFieldStatus(Status.LOADING);

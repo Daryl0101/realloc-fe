@@ -18,6 +18,7 @@ import {
   GridToolbar,
 } from "@mui/x-data-grid";
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
+import { useSnackbar } from "notistack";
 
 type AllocationInventoryItem = {
   id: number;
@@ -48,13 +49,11 @@ type Props = {
       id: string | null;
     }>
   >;
-  enqueueSnackbar: (message: string, options: any) => void;
 };
 
 const ViewAllocationInventoriesSection = ({
   pageState,
   setPageState,
-  enqueueSnackbar,
 }: Props) => {
   const [paginationRequestState, setPaginationRequestState] =
     React.useState<PaginationRequest>({
@@ -67,6 +66,7 @@ const ViewAllocationInventoriesSection = ({
   const [searchResultState, setSearchResultState] = React.useState<
     AllocationInventoryItem[]
   >([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const searchAllocationInventory = async () => {
     setPageState((prevState) => ({

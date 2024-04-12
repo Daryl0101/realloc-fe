@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { deleteFamilyAPICall } from "../../apiCall/family/deleteFamilyAPICall";
 import { Action, Status } from "@/src/lib/utils";
+import { useSnackbar } from "notistack";
 
 type ButtonProps = {
   label: string;
@@ -42,7 +43,6 @@ type Props = {
     }>
   >;
   searchFamily: () => void;
-  enqueueSnackbar: (message: string, options?: any) => void;
 };
 
 const FamilyActions = ({
@@ -50,8 +50,9 @@ const FamilyActions = ({
   pageState,
   setPageState,
   searchFamily,
-  enqueueSnackbar,
 }: Props) => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const deleteFamily = async () => {
     setPageState((prevState) => ({ ...prevState, status: Status.LOADING }));
     const result = await deleteFamilyAPICall(params.row.id);

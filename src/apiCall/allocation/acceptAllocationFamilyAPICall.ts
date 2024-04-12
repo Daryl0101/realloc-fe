@@ -9,7 +9,7 @@ export const acceptAllocationFamilyAPICall = async (id: string | null) => {
   try {
     if (!id) return { error: "Allocation Family ID not found" };
     res = await fetch(
-      `{${process.env.BASE_API_PATH}}/allocation/family/${id}/accept`,
+      `${process.env.BASE_API_PATH}/allocation/family/${id}/accept`,
       {
         method: "PATCH",
         headers: {

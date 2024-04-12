@@ -26,6 +26,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import ViewAllocationInventoriesSection from "./viewAllocationDialogSection-Inventories";
 import ViewAllocationFamiliesSection from "./viewAllocationDialogSection-Families";
 import { LoadingButton } from "@mui/lab";
+import { useSnackbar } from "notistack";
 
 type AllocationResponse = {
   allocationNo: string;
@@ -50,7 +51,6 @@ type Props = {
       id: string | null;
     }>
   >;
-  enqueueSnackbar: (message: string, options: any) => void;
   webSocketCallRefresh: {
     type: "allocation_process" | "accept_reject_allocation_family";
   };
@@ -73,11 +73,11 @@ const allocationResponseDefaultState = {
 const ViewAllocationDialog = ({
   pageState: pageState,
   setPageState: setPageState,
-  enqueueSnackbar,
   webSocketCallRefresh,
 }: Props) => {
   const [allocationResponseState, setAllocationResponseState] =
     React.useState<AllocationResponse>(allocationResponseDefaultState);
+  const { enqueueSnackbar } = useSnackbar();
 
   const retrieveAllocation = async () => {
     setPageState((prevState) => ({
@@ -279,7 +279,6 @@ const ViewAllocationDialog = ({
                     <ViewAllocationInventoriesSection
                       pageState={pageState}
                       setPageState={setPageState}
-                      enqueueSnackbar={enqueueSnackbar}
                     />
                   </Grid>
                 </Grid>
@@ -296,7 +295,6 @@ const ViewAllocationDialog = ({
             <ViewAllocationFamiliesSection
               pageState={pageState}
               setPageState={setPageState}
-              enqueueSnackbar={enqueueSnackbar}
               allocationResponseState={allocationResponseState}
               retrieveAllocation={retrieveAllocation}
               webSocketCallRefresh={webSocketCallRefresh}

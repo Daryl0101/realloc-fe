@@ -26,7 +26,6 @@ type Props = {
       id: string | null;
     }>
   >;
-  enqueueSnackbar: (message: string, options: any) => void;
   allocationCreateRequestState: AllocationCreateRequest;
   setAllocationCreateRequestState: React.Dispatch<
     React.SetStateAction<AllocationCreateRequest>
@@ -39,7 +38,6 @@ type Props = {
 const CreateAllocationConstraintsSection = ({
   pageState: pageState,
   setPageState: setPageState,
-  enqueueSnackbar,
   allocationCreateRequestState,
   setAllocationCreateRequestState,
   direction,

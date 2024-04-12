@@ -41,6 +41,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
+import { useSnackbar } from "notistack";
 
 type PersonInfo = {
   id: string | null;
@@ -88,7 +89,6 @@ type Props = {
     }>
   >;
   searchFamily: () => void;
-  enqueueSnackbar: (message: string, options: any) => void;
 };
 
 var memberParamsDefaultState: PersonInfo = {
@@ -125,7 +125,6 @@ const FamilyDialog = ({
   pageState: pageState,
   setPageState: setPageState,
   searchFamily,
-  enqueueSnackbar,
 }: Props) => {
   const [familyParamsState, setFamilyParamsState] = React.useState<Params>(
     familyParamsDefaultState
@@ -137,6 +136,7 @@ const FamilyDialog = ({
     React.useState<Status>(Status.OPEN);
   const [activityLevelDropdownState, setActivityLevelDropdownState] =
     React.useState<DropdownItem[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const searchFoodCategories = async (searchString: string) => {
     setAutocompleteFieldStatus(Status.LOADING);

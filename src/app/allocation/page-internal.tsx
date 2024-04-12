@@ -394,12 +394,10 @@ const AllocationInternal = () => {
       <CreateAllocationDialog
         pageState={pageState}
         setPageState={setPageState}
-        enqueueSnackbar={enqueueSnackbar}
       />
       <ViewAllocationDialog
         pageState={pageState}
         setPageState={setPageState}
-        enqueueSnackbar={enqueueSnackbar}
         webSocketCallRefresh={webSocketCallRefresh}
       />
       <Box display="flex" width="100%" justifyContent="space-between" my={2}>

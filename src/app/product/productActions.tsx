@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { deleteProductAPICall } from "../../apiCall/product/deleteProductAPICall";
 import { Action, Status } from "@/src/lib/utils";
+import { useSnackbar } from "notistack";
 
 type ButtonProps = {
   label: string;
@@ -42,7 +43,6 @@ type Props = {
     }>
   >;
   searchProduct: () => void;
-  enqueueSnackbar: (message: string, options?: any) => void;
 };
 
 const ProductActions = ({
@@ -50,8 +50,9 @@ const ProductActions = ({
   pageState,
   setPageState,
   searchProduct,
-  enqueueSnackbar,
 }: Props) => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const deleteProduct = async () => {
     setPageState((prevState) => ({ ...prevState, status: Status.LOADING }));
     const result = await deleteProductAPICall(params.row.id);

@@ -17,6 +17,7 @@ import { LoadingButton } from "@mui/lab";
 import CreateAllocationFamilySection from "./createAllocationDialogSection-Families";
 import { addNewAllocationAPICall } from "../../apiCall/allocation/addNewAllocationAPICall";
 import CreateAllocationConstraintsSection from "./createAllocationDialogSection-Constraints";
+import { useSnackbar } from "notistack";
 
 type InventoryItem = {
   inventoryId: number;
@@ -49,7 +50,6 @@ type Props = {
       id: string | null;
     }>
   >;
-  enqueueSnackbar: (message: string, options: any) => void;
 };
 
 const steps = [
@@ -61,7 +61,6 @@ const steps = [
 const CreateAllocationDialog = ({
   pageState: pageState,
   setPageState: setPageState,
-  enqueueSnackbar,
 }: Props) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [allocationCreateRequestState, setAllocationCreateRequestState] =
@@ -71,6 +70,7 @@ const CreateAllocationDialog = ({
     "left"
   );
   const slideRef = React.useRef<HTMLElement>(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   const createAllocation = async () => {
     setPageState((prevState) => ({
@@ -126,7 +126,6 @@ const CreateAllocationDialog = ({
   const sections = [
     <CreateAllocationFamilySection
       key={0}
-      enqueueSnackbar={enqueueSnackbar}
       pageState={pageState}
       setPageState={setPageState}
       allocationCreateRequestState={allocationCreateRequestState}
@@ -140,7 +139,6 @@ const CreateAllocationDialog = ({
 
     <CreateAllocationInventoriesSection
       key={1}
-      enqueueSnackbar={enqueueSnackbar}
       pageState={pageState}
       setPageState={setPageState}
       allocationCreateRequestState={allocationCreateRequestState}
@@ -153,7 +151,6 @@ const CreateAllocationDialog = ({
     />,
     <CreateAllocationConstraintsSection
       key={2}
-      enqueueSnackbar={enqueueSnackbar}
       pageState={pageState}
       setPageState={setPageState}
       allocationCreateRequestState={allocationCreateRequestState}

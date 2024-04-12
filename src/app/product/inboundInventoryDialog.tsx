@@ -58,6 +58,7 @@ import {
 } from "@mui/x-data-grid";
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
 import { retrieveStorageAPICall } from "../../apiCall/sysref/retrieveStorageAPICall";
+import { useSnackbar } from "notistack";
 
 type FoodCategory = {
   id: number;
@@ -131,7 +132,6 @@ type Props = {
     }>
   >;
   productId: string;
-  enqueueSnackbar: (message: string, options: any) => void;
 };
 
 var productParamsDefaultState: ProductParams = {
@@ -186,7 +186,6 @@ const InboundInventoryDialog = ({
   pageState: pageState,
   setPageState: setPageState,
   productId: productId,
-  enqueueSnackbar,
 }: Props) => {
   const [paginationRequestState, setPaginationRequestState] =
     React.useState<PaginationRequest>({
@@ -208,6 +207,7 @@ const InboundInventoryDialog = ({
     React.useState<GridRowSelectionModel>([]);
   const [storageAccordionExpanded, setStorageAccordionExpanded] =
     React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   const retrieveProduct = async () => {
     setPageState((prevState) => ({

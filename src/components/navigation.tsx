@@ -26,7 +26,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { AiOutlineTrademark } from "react-icons/ai";
 import { Role } from "../lib/utils";
-import { Alert, Box, Link, Snackbar } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import { signOut } from "next-auth/react";
 import NotificationDropdown from "./notificationDropdown";
 import { registerFCMTokenAPICall } from "../apiCall/notification/registerFCMTokenAPICall";
@@ -117,7 +117,6 @@ export default function Navigation(props: {
 }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [notificationTitle, setNotificationTitle] = React.useState<string>("");
   const { enqueueSnackbar } = useSnackbar();
 
   const handleDrawerOpen = () => {
@@ -174,14 +173,13 @@ export default function Navigation(props: {
 
     if (permission === "granted") {
       await generateFCMToken();
+      onMessage(getMessaging(app), (payload) => {
+        if (payload.notification && payload.notification.title)
+          // setNotificationTitle(payload.notification.title);
+          enqueueSnackbar(payload.notification.title, { variant: "info" });
+      });
     } else console.log("Unable to get permission to notify.");
   };
-
-  onMessage(getMessaging(app), (payload) => {
-    if (payload.notification && payload.notification.title)
-      // setNotificationTitle(payload.notification.title);
-      enqueueSnackbar(payload.notification.title, { variant: "info" });
-  });
 
   React.useEffect(() => {
     requestNotificationPermission();

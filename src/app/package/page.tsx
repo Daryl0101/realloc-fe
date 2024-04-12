@@ -546,7 +546,6 @@ const Package = () => {
             <PackageDetailCard
               pageState={pageState}
               setPageState={setPageState}
-              enqueueSnackbar={enqueueSnackbar}
               setRowSelectionModel={setRowSelectionModel}
               webSocketCallRefresh={webSocketCallRefresh}
               userRole={userRole}

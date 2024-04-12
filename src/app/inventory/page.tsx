@@ -286,7 +286,6 @@ const Inventory = () => {
             pageState={pageState}
             setPageState={setPageState}
             searchInventory={searchInventory}
-            enqueueSnackbar={enqueueSnackbar}
           />
         );
       },
@@ -303,19 +302,16 @@ const Inventory = () => {
         pageState={pageState}
         setPageState={setPageState}
         searchInventory={searchInventory}
-        enqueueSnackbar={enqueueSnackbar}
       ></InventoryDialog> */}
       <AdjustInventoryDialog
         pageState={pageState}
         setPageState={setPageState}
         searchInventory={searchInventory}
-        enqueueSnackbar={enqueueSnackbar}
       />
       <ViewInventoryDialog
         pageState={pageState}
         setPageState={setPageState}
         searchInventory={searchInventory}
-        enqueueSnackbar={enqueueSnackbar}
       />
       <Box display="flex" width="100%" justifyContent="space-between" my={2}>
         <Typography variant="h6" mb={2} justifySelf="flex-start">

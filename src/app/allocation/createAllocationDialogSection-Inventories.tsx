@@ -56,6 +56,7 @@ import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
 import HelpIcon from "@mui/icons-material/Help";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import dayjs from "dayjs";
+import { useSnackbar } from "notistack";
 
 type InventoryItem = {
   inventoryId: number;
@@ -134,7 +135,6 @@ type Props = {
       id: string | null;
     }>
   >;
-  enqueueSnackbar: (message: string, options: any) => void;
   allocationCreateRequestState: AllocationCreateRequest;
   setAllocationCreateRequestState: React.Dispatch<
     React.SetStateAction<AllocationCreateRequest>
@@ -149,7 +149,6 @@ type Props = {
 const CreateAllocationInventoriesSection = ({
   pageState: pageState,
   setPageState: setPageState,
-  enqueueSnackbar,
   allocationCreateRequestState,
   setAllocationCreateRequestState,
   isAbleToProceed,
@@ -176,6 +175,7 @@ const CreateAllocationInventoriesSection = ({
   const [selectedRow, setSelectedRow] = React.useState<number | null>(null);
   const dataGridRef = useRef<HTMLDivElement>(null);
   const [dataGridHeight, setDataGridHeight] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
 
   const searchInventory = async () => {
     setPageState((prevState) => ({
