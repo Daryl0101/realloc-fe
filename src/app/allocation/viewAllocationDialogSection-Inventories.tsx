@@ -9,7 +9,7 @@ import generateSequentialNos, {
   Status,
 } from "@/src/lib/utils";
 import React, { useEffect } from "react";
-import { searchAllocationInventoryAPICall } from "../apiCall/allocation/searchAllocationInventoryAPICall";
+import { searchAllocationInventoryAPICall } from "../../apiCall/allocation/searchAllocationInventoryAPICall";
 import { LinearProgress, Paper, Tooltip, Typography } from "@mui/material";
 import {
   DataGrid,

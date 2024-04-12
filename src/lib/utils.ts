@@ -57,6 +57,11 @@ export enum PackageStatus {
   DELIVERED = "DELIVERED",
 }
 
+export enum NotificationReadStatus {
+  UNREAD = "UNREAD",
+  READ = "READ",
+}
+
 export const NutrientWeight = {
   CALORIE: 3,
   CARBOHYDRATE: 2,

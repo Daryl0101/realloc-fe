@@ -39,7 +39,7 @@ import {
   GridToolbar,
 } from "@mui/x-data-grid";
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
-import { searchAllocationFamilyAPICall } from "../apiCall/allocation/searchAllocationFamilyAPICall";
+import { searchAllocationFamilyAPICall } from "../../apiCall/allocation/searchAllocationFamilyAPICall";
 import { calculateNutrientOverallFulfilment } from "./calculateNutrientOverallFulfilment";
 import { green, grey, orange, red, yellow } from "@mui/material/colors";
 import theme from "@/src/lib/theme";
@@ -48,8 +48,8 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import dayjs from "dayjs";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import { acceptAllocationFamilyAPICall } from "../apiCall/allocation/acceptAllocationFamilyAPICall";
-import { rejectAllocationFamilyAPICall } from "../apiCall/allocation/rejectAllocationFamilyAPICall";
+import { acceptAllocationFamilyAPICall } from "../../apiCall/allocation/acceptAllocationFamilyAPICall";
+import { rejectAllocationFamilyAPICall } from "../../apiCall/allocation/rejectAllocationFamilyAPICall";
 
 type AllocationResponse = {
   allocationNo: string;

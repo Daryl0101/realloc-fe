@@ -26,9 +26,9 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import CustomNoRowsOverlay from "../../components/dataGrid/noRowsOverlay";
 import { LoadingButton } from "@mui/lab";
-import { addNewUserAPICall } from "../apiCall/authentication/addNewUserAPICall";
+import { addNewUserAPICall } from "../../apiCall/authentication/addNewUserAPICall";
 import { useSnackbar } from "notistack";
-import { searchUserAPICall } from "../apiCall/authentication/searchUserAPICall";
+import { searchUserAPICall } from "../../apiCall/authentication/searchUserAPICall";
 import { MuiTelInput } from "mui-tel-input";
 
 type SearchParams = {

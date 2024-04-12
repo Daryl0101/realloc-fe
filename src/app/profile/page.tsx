@@ -8,7 +8,6 @@ import {
   Typography,
 } from "@mui/material";
 import { getServerSession } from "next-auth";
-import React from "react";
 import { options } from "../api/auth/[...nextauth]/options";
 import {
   ApiResponse,
@@ -18,7 +17,7 @@ import {
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 
-const profileGetAPI = `${process.env.BACKEND_API_URL}/authentication/profile`;
+const profileGetAPI = `${process.env.BASE_API_PATH}/authentication/profile`;
 
 interface Model {
   username: string;

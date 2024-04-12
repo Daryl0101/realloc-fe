@@ -20,18 +20,22 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { AiOutlineTrademark } from "react-icons/ai";
-import { PiTrademarkLight } from "react-icons/pi";
-import logout from "../lib/logout";
-import { useSession } from "next-auth/react";
 import { Role } from "../lib/utils";
-import { Session } from "next-auth";
-import { Box } from "@mui/material";
+import { Alert, Box, Link, Snackbar } from "@mui/material";
+import { signOut } from "next-auth/react";
+import NotificationDropdown from "./notificationDropdown";
+import { registerFCMTokenAPICall } from "../apiCall/notification/registerFCMTokenAPICall";
+import { app } from "../lib/firebase";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { vapidKey } from "@/app.config";
+import { unregisterFCMTokenAPICall } from "../apiCall/notification/unregisterFCMTokenAPICall";
+import { logoutAPICall } from "../apiCall/authentication/logoutAPICall";
+import { useSnackbar } from "notistack";
 
 const drawerWidth = 240;
 
@@ -104,10 +108,17 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function Navigation(props: { session: Session }) {
+export default function Navigation(props: {
+  user: {
+    id: string;
+    email: string | null | undefined;
+    role: Role;
+  };
+}) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  // useSession();
+  const [notificationTitle, setNotificationTitle] = React.useState<string>("");
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -116,6 +127,65 @@ export default function Navigation(props: { session: Session }) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleLogout = async () => {
+    const notificationPermission = await Notification.requestPermission();
+    if (notificationPermission === "granted") {
+      const token = await getToken(getMessaging(app), {
+        vapidKey: vapidKey,
+      });
+      if (token) {
+        await unregisterFCMTokenAPICall(token);
+      }
+    }
+    const result = await logoutAPICall();
+    if (result.error) {
+      console.log(result.error);
+    }
+    signOut();
+  };
+
+  const generateFCMToken = async () => {
+    console.log("Notification permission granted.");
+
+    const token = await getToken(getMessaging(app), {
+      vapidKey: vapidKey,
+    });
+
+    if (token) {
+      const registerResult = await registerFCMTokenAPICall(token);
+      console.log(registerResult);
+    } else {
+      // Show permission request UI
+      console.log(
+        "No registration token available. Request permission to generate one."
+      );
+      // ...
+    }
+    // catch{(err) => {
+    //   console.log("An error occurred while retrieving token. ", err);
+    //   // ...
+    // }};
+  };
+
+  const requestNotificationPermission = async () => {
+    console.log("Requesting permission...");
+    const permission = await Notification.requestPermission();
+
+    if (permission === "granted") {
+      await generateFCMToken();
+    } else console.log("Unable to get permission to notify.");
+  };
+
+  onMessage(getMessaging(app), (payload) => {
+    if (payload.notification && payload.notification.title)
+      // setNotificationTitle(payload.notification.title);
+      enqueueSnackbar(payload.notification.title, { variant: "info" });
+  });
+
+  React.useEffect(() => {
+    requestNotificationPermission();
+  }, []);
 
   const pages = [
     { name: "Dashboard", path: "/", icon: <HomeIcon />, managerOnly: false },
@@ -152,7 +222,7 @@ export default function Navigation(props: { session: Session }) {
   ];
 
   const availablePages = pages.map((page) => {
-    if (page.managerOnly && props.session?.user.role !== Role.manager) {
+    if (page.managerOnly && props.user.role !== Role.manager) {
       return null;
     }
     return (
@@ -182,34 +252,69 @@ export default function Navigation(props: { session: Session }) {
 
   return (
     <>
+      {/* <Snackbar
+        open={!!notificationTitle}
+        // message={notificationTitle}
+        onClose={() => {
+          setNotificationTitle("");
+        }}
+        autoHideDuration={5000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => {
+            setNotificationTitle("");
+          }}
+          severity="info"
+          variant="standard"
+          sx={{ width: "100%" }}
+        >
+          {notificationTitle}
+        </Alert>
+      </Snackbar> */}
       <AppBar position="fixed" enableColorOnDark={true} open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(open && { display: "none" }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Box display="flex" height="fit-content">
-            <Typography variant="h6" noWrap component="div">
-              ReAlloc
-            </Typography>
-            <AiOutlineTrademark
-              style={{
-                alignSelf: "start",
-                marginTop: 4,
-                marginLeft: 2,
-                fontSize: 12,
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box display="flex" alignItems="center" columnGap={3}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={{
+                // marginRight: 5,
+                ...(open && { display: "none" }),
               }}
-            />
-            {/* <PiTrademarkLight style={{ alignSelf: "start" }} /> */}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box display="flex" height="fit-content">
+              <Typography variant="h6" noWrap component="div">
+                <Link
+                  href="/"
+                  underline="none"
+                  color={theme.palette.text.primary}
+                  fontFamily="cursive"
+                >
+                  ReAlloc
+                </Link>
+              </Typography>
+              <AiOutlineTrademark
+                style={{
+                  alignSelf: "start",
+                  marginTop: 4,
+                  marginLeft: 2,
+                  fontSize: 12,
+                }}
+              />
+              {/* <PiTrademarkLight style={{ alignSelf: "start" }} /> */}
+            </Box>
           </Box>
+          <NotificationDropdown user_id={props.user.id} />
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -255,7 +360,7 @@ export default function Navigation(props: { session: Session }) {
         </List>
         <Divider />
         <List>
-          {props.session?.user.role === Role.manager ? (
+          {props.user.role === Role.manager ? (
             <ListItem
               key="Organization"
               disablePadding
@@ -313,7 +418,7 @@ export default function Navigation(props: { session: Session }) {
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
-              onClick={logout}
+              onClick={handleLogout}
             >
               <ListItemIcon
                 sx={{

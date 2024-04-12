@@ -15,7 +15,7 @@ import CreateAllocationInventoriesSection from "./createAllocationDialogSection-
 import QontoConnector, { QontoStepIcon } from "@/src/components/stepper/qonto";
 import { LoadingButton } from "@mui/lab";
 import CreateAllocationFamilySection from "./createAllocationDialogSection-Families";
-import { addNewAllocationAPICall } from "../apiCall/allocation/addNewAllocationAPICall";
+import { addNewAllocationAPICall } from "../../apiCall/allocation/addNewAllocationAPICall";
 import CreateAllocationConstraintsSection from "./createAllocationDialogSection-Constraints";
 
 type InventoryItem = {

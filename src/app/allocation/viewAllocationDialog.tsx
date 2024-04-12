@@ -19,7 +19,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import React, { useEffect } from "react";
-import { retrieveAllocationAPICall } from "../apiCall/allocation/retrieveAllocationAPICall";
+import { retrieveAllocationAPICall } from "../../apiCall/allocation/retrieveAllocationAPICall";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AllocationChip from "./allocationChip";
 import { DataGrid } from "@mui/x-data-grid";

@@ -24,7 +24,15 @@ export default async function RootLayout({
         <Providers>
           <CssBaseline />
           <Box sx={{ display: "flex" }}>
-            {session ? <Navigation session={session} /> : null}
+            {session ? (
+              <Navigation
+                user={{
+                  id: session.user.id,
+                  email: session.user.email,
+                  role: session.user.role,
+                }}
+              />
+            ) : null}
             <Box
               component="main"
               sx={{

@@ -45,10 +45,10 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
-import { inboundNewInventoryAPICall } from "../apiCall/inventory/inboundNewInventoryAPICall";
-import { adjustInventoryAPICall } from "../apiCall/inventory/adjustInventoryAPICall";
-import { retrieveProductAPICall } from "../apiCall/product/retrieveProductAPICall";
-import { searchStorageAPICall } from "../apiCall/sysref/searchStorageAPICall";
+import { inboundNewInventoryAPICall } from "../../apiCall/inventory/inboundNewInventoryAPICall";
+import { adjustInventoryAPICall } from "../../apiCall/inventory/adjustInventoryAPICall";
+import { retrieveProductAPICall } from "../../apiCall/product/retrieveProductAPICall";
+import { searchStorageAPICall } from "../../apiCall/sysref/searchStorageAPICall";
 import {
   DataGrid,
   GridColDef,
@@ -57,7 +57,7 @@ import {
   GridToolbar,
 } from "@mui/x-data-grid";
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
-import { retrieveStorageAPICall } from "../apiCall/sysref/retrieveStorageAPICall";
+import { retrieveStorageAPICall } from "../../apiCall/sysref/retrieveStorageAPICall";
 
 type FoodCategory = {
   id: number;

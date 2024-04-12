@@ -13,7 +13,7 @@ import generateSequentialNos, {
 } from "@/src/lib/utils";
 import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
-import { searchPackageAPICall } from "../apiCall/package/searchPackageAPICall";
+import { searchPackageAPICall } from "../../apiCall/package/searchPackageAPICall";
 import {
   DataGrid,
   GridColDef,
@@ -40,10 +40,10 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import GlobalConfig from "../../../app.config";
 import { LoadingButton } from "@mui/lab";
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
-import { retrievePackageAPICall } from "../apiCall/package/retrievePackageAPICall";
+import { retrievePackageAPICall } from "../../apiCall/package/retrievePackageAPICall";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import PackageDetailCard from "./packageDetailCard";
-import { getUserRoleAPICall } from "../apiCall/authentication/getUserRoleAPICall";
+import { getUserRoleAPICall } from "../../apiCall/authentication/getUserRoleAPICall";
 import theme from "@/src/lib/theme";
 
 type SearchParams = {

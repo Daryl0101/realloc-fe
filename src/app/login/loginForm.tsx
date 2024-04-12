@@ -1,10 +1,11 @@
 "use client";
-import React, { useRef, useState } from "react";
-import { getSession, signIn } from "next-auth/react";
-import { Box, Button, Grid, TextField } from "@mui/material";
+import React, { useState } from "react";
+import { signIn } from "next-auth/react";
+import { TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Status } from "../../lib/utils";
 import { useSnackbar } from "notistack";
+import { getUserSessionServerAction } from "../../apiCall/authentication/getUserSessionServerAction";
 const LoginForm = () => {
   const [formSubmissionStatus, setFormSubmissionStatus] = useState<Status>(
     Status.OPEN
@@ -26,13 +27,8 @@ const LoginForm = () => {
 
     // setFormSubmissionStatus(Status.OPEN);
 
-    const session = await getSession();
-    if (!session) {
-      setFormSubmissionStatus(Status.OPEN);
-      enqueueSnackbar("Failed to login", {
-        variant: "error",
-      });
-    } else {
+    const session = await getUserSessionServerAction();
+    if ("id" in session) {
       enqueueSnackbar("Logged in successfully", {
         variant: "success",
       });
@@ -40,6 +36,11 @@ const LoginForm = () => {
         setFormSubmissionStatus(Status.OPEN);
         location.reload();
       }, 1000);
+    } else {
+      setFormSubmissionStatus(Status.OPEN);
+      enqueueSnackbar("Failed to login", {
+        variant: "error",
+      });
     }
   };
 

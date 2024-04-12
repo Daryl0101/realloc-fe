@@ -25,12 +25,12 @@ import {
   Tooltip,
 } from "@mui/material";
 import React, { useEffect } from "react";
-import { searchFoodCategoryAPICall } from "../apiCall/sysref/searchFoodCategoryAPICall";
-import { addNewProductAPICall } from "../apiCall/product/addNewProductAPICall";
-import { editProductAPICall } from "../apiCall/product/editProductAPICall";
-import { deleteProductAPICall } from "../apiCall/product/deleteProductAPICall";
-import { retrieveProductAPICall } from "../apiCall/product/retrieveProductAPICall";
-import { editProductNutritionAPICall } from "../apiCall/product/editProductNutritionAPICall";
+import { searchFoodCategoryAPICall } from "../../apiCall/sysref/searchFoodCategoryAPICall";
+import { addNewProductAPICall } from "../../apiCall/product/addNewProductAPICall";
+import { editProductAPICall } from "../../apiCall/product/editProductAPICall";
+import { deleteProductAPICall } from "../../apiCall/product/deleteProductAPICall";
+import { retrieveProductAPICall } from "../../apiCall/product/retrieveProductAPICall";
+import { editProductNutritionAPICall } from "../../apiCall/product/editProductNutritionAPICall";
 
 type FoodCategory = {
   id: number;

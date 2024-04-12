@@ -37,7 +37,7 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
-import { searchFamilyAPICall } from "../apiCall/family/searchFamilyAPICall";
+import { searchFamilyAPICall } from "../../apiCall/family/searchFamilyAPICall";
 import { green } from "@mui/material/colors";
 
 type InventoryItem = {

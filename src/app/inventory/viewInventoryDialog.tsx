@@ -34,16 +34,16 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
-import { deleteInventoryAPICall } from "../apiCall/inventory/deleteInventoryAPICall";
-import { retrieveInventoryAPICall } from "../apiCall/inventory/retrieveInventoryAPICall";
-import { searchFoodCategoryAPICall } from "../apiCall/sysref/searchFoodCategoryAPICall";
+import { deleteInventoryAPICall } from "../../apiCall/inventory/deleteInventoryAPICall";
+import { retrieveInventoryAPICall } from "../../apiCall/inventory/retrieveInventoryAPICall";
+import { searchFoodCategoryAPICall } from "../../apiCall/sysref/searchFoodCategoryAPICall";
 import { MuiTelInput } from "mui-tel-input";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
-import { inboundNewInventoryAPICall } from "../apiCall/inventory/inboundNewInventoryAPICall";
-import { adjustInventoryAPICall } from "../apiCall/inventory/adjustInventoryAPICall";
+import { inboundNewInventoryAPICall } from "../../apiCall/inventory/inboundNewInventoryAPICall";
+import { adjustInventoryAPICall } from "../../apiCall/inventory/adjustInventoryAPICall";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 type FoodCategory = {

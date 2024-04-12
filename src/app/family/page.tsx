@@ -28,7 +28,7 @@ import { useSnackbar } from "notistack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useEffect } from "react";
-import { searchFamilyAPICall } from "../apiCall/family/searchFamilyAPICall";
+import { searchFamilyAPICall } from "../../apiCall/family/searchFamilyAPICall";
 import {
   DataGrid,
   GridColDef,

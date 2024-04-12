@@ -29,7 +29,7 @@ import { useSnackbar } from "notistack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useEffect } from "react";
-import { searchProductAPICall } from "../apiCall/product/searchProductAPICall";
+import { searchProductAPICall } from "../../apiCall/product/searchProductAPICall";
 import {
   DataGrid,
   GridColDef,

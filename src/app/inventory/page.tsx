@@ -39,7 +39,7 @@ import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
 // import InventoryDialog from "./inventoryDialog";
 import InventoryActions from "./inventoryActions";
 import { LoadingButton } from "@mui/lab";
-import { searchInventoryAPICall } from "../apiCall/inventory/searchInventoryAPICall";
+import { searchInventoryAPICall } from "../../apiCall/inventory/searchInventoryAPICall";
 import CustomDateRangePicker from "@/src/components/customDateRangePicker";
 import AnimatedArrowRightIcon from "@/src/components/animatedArrowRightIcon";
 import AdjustInventoryDialog from "./adjustInventoryDialog";

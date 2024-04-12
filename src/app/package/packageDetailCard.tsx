@@ -7,7 +7,7 @@ import {
   Status,
 } from "@/src/lib/utils";
 import React, { useEffect } from "react";
-import { retrievePackageAPICall } from "../apiCall/package/retrievePackageAPICall";
+import { retrievePackageAPICall } from "../../apiCall/package/retrievePackageAPICall";
 import {
   Box,
   Card,
@@ -48,9 +48,9 @@ import {
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
 import CloseIcon from "@mui/icons-material/Close";
 import { LoadingButton } from "@mui/lab";
-import { packPackageAPICall } from "../apiCall/package/packPackageAPICall";
-import { deliverPackageAPICall } from "../apiCall/package/deliverPackageAPICall";
-import { cancelPackageAPICall } from "../apiCall/package/cancelPackageAPICall";
+import { packPackageAPICall } from "../../apiCall/package/packPackageAPICall";
+import { deliverPackageAPICall } from "../../apiCall/package/deliverPackageAPICall";
+import { cancelPackageAPICall } from "../../apiCall/package/cancelPackageAPICall";
 
 type Props = {
   pageState: { status: Status; action: Action; id: string | null };

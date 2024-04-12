@@ -12,7 +12,7 @@ import generateSequentialNos, {
   parseDateStringToFormattedDate,
 } from "@/src/lib/utils";
 import React, { useEffect, useRef, useState } from "react";
-import { searchInventoryAPICall } from "../apiCall/inventory/searchInventoryAPICall";
+import { searchInventoryAPICall } from "../../apiCall/inventory/searchInventoryAPICall";
 import {
   DataGrid,
   GridColDef,
