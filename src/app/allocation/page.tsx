@@ -8,7 +8,7 @@ const Allocation = async () => {
   const session = await getServerSession(options);
   if (session?.user.role === Role.manager) {
     return <AllocationInternal />;
-  } else redirect("/");
+  } else redirect("/family");
 };
 
 export default Allocation;

@@ -186,7 +186,7 @@ export default function Navigation(props: {
   }, []);
 
   const pages = [
-    { name: "Dashboard", path: "/", icon: <HomeIcon />, managerOnly: false },
+    { name: "Dashboard", path: "/", icon: <HomeIcon />, managerOnly: true },
     {
       name: "Family",
       path: "/family",
@@ -293,7 +293,7 @@ export default function Navigation(props: {
             <Box display="flex" height="fit-content">
               <Typography variant="h6" noWrap component="div">
                 <Link
-                  href="/"
+                  href={props.user.role === Role.manager ? "/" : "/family"}
                   underline="none"
                   color={theme.palette.text.primary}
                   fontFamily="cursive"

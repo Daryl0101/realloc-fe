@@ -54,6 +54,10 @@ export const options: NextAuthOptions = {
       }
       return session;
     },
+    // temporary fix for redirecting to https login page
+    redirect() {
+      return "https://localhost:3000";
+    },
   },
   pages: {
     signIn: "/login",
