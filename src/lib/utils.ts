@@ -102,6 +102,15 @@ export type DropdownItem = {
   name: string;
 };
 
+export type OFFPaginatedResponse<T> = {
+  count: number;
+  page: number;
+  page_count: number;
+  page_size: number;
+  products: T[];
+  skip: number;
+};
+
 export const inputDateFormat = "DD/MM/YYYY";
 
 export const apiDateFormat = "YYYY-MM-DD";

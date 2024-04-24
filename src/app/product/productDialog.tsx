@@ -1,6 +1,7 @@
 import {
   Action,
   HalalStatus,
+  OFFPaginatedResponse,
   Status,
   parseDateTimeStringToFormattedDateTime,
 } from "@/src/lib/utils";
@@ -26,6 +27,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { searchFoodCategoryAPICall } from "../../apiCall/sysref/searchFoodCategoryAPICall";
@@ -37,7 +39,35 @@ import { editProductNutritionAPICall } from "../../apiCall/product/editProductNu
 import { useSnackbar } from "notistack";
 import CachedIcon from "@mui/icons-material/Cached";
 import InfoIcon from "@mui/icons-material/Info";
+import CloseIcon from "@mui/icons-material/Close";
 import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
+import { searchOFFAPICall } from "@/src/apiCall/off/searchOFFAPICall";
+import { useDebounce } from "@/src/lib/hooks/useDebounce";
+
+type OFFNutrimentsResult = {
+  "energy-kcal": number;
+  carbohydrates: number;
+  carbohydrates_unit: string;
+  proteins: number;
+  proteins_unit: string;
+  fat: number;
+  fat_unit: string;
+  sugars: number;
+  sugars_unit: string;
+  fiber: number;
+  fiber_unit: string;
+  "saturated-fat": number;
+  "saturated-fat_unit": string;
+  sodium: number;
+  sodium_unit: string;
+};
+
+type OFFResult = {
+  code: string;
+  nutriments: OFFNutrimentsResult;
+  product_name: string;
+  serving_quantity: string;
+};
 
 type FoodCategory = {
   id: number;
@@ -112,24 +142,29 @@ const ProductDialog = ({
   const [foodCategories, setFoodCategories] = React.useState<FoodCategory[]>(
     []
   );
-  const [autocompleteFieldStatus, setAutocompleteFieldStatus] =
-    React.useState<Status>(Status.OPEN);
+  const [
+    foodCategoryAutocompleteFieldStatus,
+    setFoodCategoryAutocompleteFieldStatus,
+  ] = React.useState<Status>(Status.OPEN);
+  const [
+    productNameAutocompleteFieldStatus,
+    setProductNameAutocompleteFieldStatus,
+  ] = React.useState<Status>(Status.OPEN);
   const [convertionValue, setConvertionValue] = React.useState<number>(0);
+  const [OFFResultState, setOFFResultState] =
+    React.useState<OFFPaginatedResponse<OFFResult> | null>(null); // Open Food Facts API result
   const { enqueueSnackbar } = useSnackbar();
+  const delayedSearchOFF = useDebounce(() => {
+    if (!!productParamsState.productName) {
+      searchOFF();
+    } else setOFFResultState(null);
+  }, 1000);
 
   const searchFoodCategories = async (searchString: string) => {
-    setAutocompleteFieldStatus(Status.LOADING);
+    setFoodCategoryAutocompleteFieldStatus(Status.LOADING);
 
     const result = await searchFoodCategoryAPICall(searchString);
     if (Array.isArray(result)) {
-      // setFoodCategories(
-      //   result.filter(
-      //     (r) =>
-      //       !addNewProductParamsState.categories
-      //         .map((category) => category.id)
-      //         .includes(r.id)
-      //   )
-      // );
       setFoodCategories(result);
     } else if (result.error) {
       if (typeof result.error === "string")
@@ -141,92 +176,20 @@ const ProductDialog = ({
       }
     }
 
-    setAutocompleteFieldStatus(Status.OPEN);
+    setFoodCategoryAutocompleteFieldStatus(Status.OPEN);
   };
 
-  // const addNewProduct = async () => {
-  //   setPageState((prevState) => ({
-  //     ...prevState,
-  //     status: Status.LOADING,
-  //   }));
-  //   const result = await addNewProductAPICall(productParamsState);
+  const searchOFF = async () => {
+    setProductNameAutocompleteFieldStatus(Status.LOADING);
+    const result = await searchOFFAPICall(productParamsState.productName);
+    if ("page_count" in result) {
+      setOFFResultState(result);
+    } else if (result.error) {
+      enqueueSnackbar(result.error, { variant: "error" });
+    }
 
-  //   setPageState((prevState) => ({
-  //     ...prevState,
-  //     status: Status.OPEN,
-  //   }));
-
-  //   if (result.success) {
-  //     enqueueSnackbar(result.success, { variant: "success" });
-  //     handleDialogClose();
-  //     handleResetDialog();
-  //     searchProduct();
-  //   } else if (result.error) {
-  //     if (Array.isArray(result.error)) {
-  //       result.error.forEach((error) =>
-  //         enqueueSnackbar(error, { variant: "error" })
-  //       );
-  //     } else enqueueSnackbar(result.error, { variant: "error" });
-  //   }
-  // };
-
-  // const editProduct = async () => {
-  //   setPageState((prevState) => ({
-  //     ...prevState,
-  //     status: Status.LOADING,
-  //   }));
-  //   const result = await editProductAPICall({
-  //     ...productParamsState,
-  //     id: pageState.id,
-  //   });
-
-  //   setPageState((prevState) => ({
-  //     ...prevState,
-  //     status: Status.OPEN,
-  //   }));
-
-  //   if (result.success) {
-  //     enqueueSnackbar(result.success, { variant: "success" });
-  //     handleDialogClose();
-  //     handleResetDialog();
-  //     searchProduct();
-  //   } else if (result.error) {
-  //     if (Array.isArray(result.error)) {
-  //       result.error.forEach((error) =>
-  //         enqueueSnackbar(error, { variant: "error" })
-  //       );
-  //     } else enqueueSnackbar(result.error, { variant: "error" });
-  //   }
-  // };
-
-  // const deleteProduct = async () => {
-  //   setPageState((prevState) => ({
-  //     ...prevState,
-  //     status: Status.LOADING,
-  //   }));
-
-  //   const result = await deleteProductAPICall(pageState.id);
-
-  //   setPageState((prevState) => ({
-  //     ...prevState,
-  //     status: Status.OPEN,
-  //   }));
-
-  //   if (result.success) {
-  //     enqueueSnackbar(result.success, { variant: "success" });
-  //     handleDialogClose();
-  //     handleResetDialog();
-  //   searchProduct();
-  //   } else if (result.error) {
-  //     if (typeof result.error === "string")
-  //       enqueueSnackbar(result.error, { variant: "error" });
-  //     else {
-  //       result.error.forEach((error) => {
-  //         enqueueSnackbar(error, { variant: "error" });
-  //       });
-  //     }
-  //   }
-  // };
+    setProductNameAutocompleteFieldStatus(Status.OPEN);
+  };
 
   const retrieveProduct = async () => {
     setPageState((prevState) => ({
@@ -245,16 +208,6 @@ const ProductDialog = ({
         variant: "success",
       });
       productParamsDefaultState = result;
-      // productParamsDefaultState = {
-      //   ...result,
-      //   productName: result.name,
-      //   servingSize: result.serving_size,
-      //   saturatedFat: result.saturated_fat,
-      //   categories: result.food_categories,
-      //   halalStatus: result.is_halal
-      //     ? HalalStatus.Halal
-      //     : HalalStatus["Non Halal"],
-      // };
       handleResetDialog();
     } else if (result.error) {
       if (typeof result.error === "string")
@@ -371,6 +324,7 @@ const ProductDialog = ({
 
   const handleResetDialog = () => {
     setProductParamsState(productParamsDefaultState);
+    setOFFResultState(null);
   };
 
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -529,24 +483,10 @@ const ProductDialog = ({
   }, [productParamsState.servingSize]);
 
   // useEffect(() => {
-  //   productParamsDefaultState = {
-  //     productName: "",
-  //     description: "",
-  //     categories: [],
-  //     halalStatus: HalalStatus["Non Halal"],
-  //     servingSize: "0.01",
-  //     calorie: "0.01",
-  //     carbohydrate: "0.00",
-  //     protein: "0.00",
-  //     fat: "0.00",
-  //     sugar: "0.00",
-  //     fiber: "0.00",
-  //     saturatedFat: "0.00",
-  //     cholesterol: "0.00",
-  //     sodium: "0.00",
-  //   };
-  //   setProductParamsState(productParamsDefaultState);
-  // }, [[Action.ADD].includes(pageState.action)]);
+  //   if (productParamsState.productName)
+  //     searchOFF();
+  //   else setOFFResultState([]);
+  // }, [productParamsState.productName]);
 
   var dialogTitle = "";
   var onSubmit = null;
@@ -585,7 +525,200 @@ const ProductDialog = ({
             <DialogContentText>Product Details</DialogContentText>
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
+              disableClearable
+              readOnly={pageState.action === Action.VIEW}
+              disabled={
+                pageState.status === Status.LOADING ||
+                pageState.action === Action.EDIT
+              }
+              loading={productNameAutocompleteFieldStatus === Status.LOADING}
+              value={productParamsState.productName}
+              options={OFFResultState ? OFFResultState.products : []}
+              getOptionLabel={(option) =>
+                typeof option === "string" ? option : option.product_name
+              }
+              onChange={(event, newValue) => {
+                if (newValue === null) return;
+                if (typeof newValue === "string")
+                  setProductParamsState((prevState) => ({
+                    ...prevState,
+                    productName: newValue,
+                  }));
+                else
+                  setProductParamsState((prevState) => ({
+                    ...prevState,
+                    productName: newValue.product_name,
+                    servingSize: parseFloat(newValue.serving_quantity).toFixed(
+                      2
+                    ),
+                    calorie: newValue.nutriments["energy-kcal"].toFixed(2),
+                    carbohydrate: newValue.nutriments.carbohydrates.toFixed(2),
+                    protein: newValue.nutriments.proteins.toFixed(2),
+                    fat: newValue.nutriments.fat.toFixed(2),
+                    sugar: newValue.nutriments.sugars.toFixed(2),
+                    fiber: newValue.nutriments.fiber.toFixed(2),
+                    saturatedFat:
+                      newValue.nutriments["saturated-fat"].toFixed(2),
+                    sodium:
+                      newValue.nutriments.sodium_unit === "g"
+                        ? (newValue.nutriments.sodium * 1000).toFixed(2)
+                        : newValue.nutriments.sodium.toFixed(2),
+                  }));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  name="productName"
+                  label="Product Name"
+                  InputProps={{
+                    ...params.InputProps,
+                    // type: "search",
+                    endAdornment: (
+                      <>
+                        {productNameAutocompleteFieldStatus ===
+                        Status.LOADING ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {productParamsState.productName &&
+                        pageState.action === Action.ADD ? (
+                          <IconButton
+                            onClick={() => {
+                              setProductParamsState((prevState) => ({
+                                ...prevState,
+                                productName: "",
+                              }));
+                              setOFFResultState(null);
+                            }}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setProductParamsState((prevState) => ({
+                      ...prevState,
+                      productName: e.target.value,
+                    }));
+                  }}
+                  onKeyUp={delayedSearchOFF}
+                />
+              )}
+              renderOption={(props, option) => {
+                return (
+                  <li
+                    {...props}
+                    key={`${option.code}-tooltip`}
+                    style={{ display: "flex", marginTop: 2 }}
+                  >
+                    <Grid container>
+                      <Grid item xs={12}>
+                        {option.product_name}
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Serving Size
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.serving_quantity} g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Calorie
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.nutriments["energy-kcal"]} kcal
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Carbohydrate
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.nutriments.carbohydrates} g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Protein
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.nutriments.proteins} g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Fat
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.nutriments.fat} g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Sugar
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.nutriments.sugars} g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Fiber
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.nutriments.fiber} g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Saturated Fat
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.nutriments["saturated-fat"]} g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          Sodium
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography color="textSecondary" variant="body2">
+                          {option.nutriments.sodium_unit === "g"
+                            ? option.nutriments.sodium * 1000
+                            : option.nutriments.sodium}{" "}
+                          mg
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </li>
+                );
+              }}
+            />
+            {/* <TextField
               name="productName"
               variant="outlined"
               label="Product Name"
@@ -602,7 +735,7 @@ const ProductDialog = ({
                 pageState.status === Status.LOADING ||
                 pageState.action === Action.EDIT
               }
-            />
+            /> */}
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -641,7 +774,7 @@ const ProductDialog = ({
               //   filterSelectedOptions
               onOpen={() => searchFoodCategories("")}
               value={productParamsState.categories}
-              loading={autocompleteFieldStatus === Status.LOADING}
+              loading={foodCategoryAutocompleteFieldStatus === Status.LOADING}
               onChange={(event, newValue) => {
                 setProductParamsState((prevState) => ({
                   ...prevState,
@@ -658,7 +791,8 @@ const ProductDialog = ({
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {autocompleteFieldStatus === Status.LOADING ? (
+                        {foodCategoryAutocompleteFieldStatus ===
+                        Status.LOADING ? (
                           <CircularProgress color="inherit" size={20} />
                         ) : null}
                         {params.InputProps.endAdornment}
