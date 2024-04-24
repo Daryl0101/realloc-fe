@@ -7,6 +7,7 @@ import {
 import { LoadingButton } from "@mui/lab";
 import {
   Autocomplete,
+  Box,
   Chip,
   CircularProgress,
   Dialog,
@@ -15,7 +16,9 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
+  FormGroup,
   Grid,
+  IconButton,
   ListItem,
   ListItemButton,
   ListItemText,
@@ -32,6 +35,9 @@ import { deleteProductAPICall } from "../../apiCall/product/deleteProductAPICall
 import { retrieveProductAPICall } from "../../apiCall/product/retrieveProductAPICall";
 import { editProductNutritionAPICall } from "../../apiCall/product/editProductNutritionAPICall";
 import { useSnackbar } from "notistack";
+import CachedIcon from "@mui/icons-material/Cached";
+import InfoIcon from "@mui/icons-material/Info";
+import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 
 type FoodCategory = {
   id: number;
@@ -108,6 +114,7 @@ const ProductDialog = ({
   );
   const [autocompleteFieldStatus, setAutocompleteFieldStatus] =
     React.useState<Status>(Status.OPEN);
+  const [convertionValue, setConvertionValue] = React.useState<number>(0);
   const { enqueueSnackbar } = useSnackbar();
 
   const searchFoodCategories = async (searchString: string) => {
@@ -517,6 +524,10 @@ const ProductDialog = ({
     }
   }, [pageState.id]);
 
+  useEffect(() => {
+    setConvertionValue(parseFloat(productParamsState.servingSize));
+  }, [productParamsState.servingSize]);
+
   // useEffect(() => {
   //   productParamsDefaultState = {
   //     productName: "",
@@ -733,8 +744,128 @@ const ProductDialog = ({
           <Grid item xs={12}>
             <Divider></Divider>
           </Grid>
-          <Grid item xs={12}>
-            <DialogContentText>Product Nutritions</DialogContentText>
+          <Grid item xs={12} display="flex" justifyContent="space-between">
+            <Box display="flex" alignItems="center" gap={1}>
+              <DialogContentText>Product Nutritions</DialogContentText>
+              {[Action.ADD, Action.EDIT].includes(
+                pageState.action as Action
+              ) ? (
+                <Tooltip title="Scan product nutrition label">
+                  <IconButton>
+                    <DocumentScannerIcon color="action" />
+                  </IconButton>
+                </Tooltip>
+              ) : null}
+            </Box>
+            {[Action.ADD, Action.EDIT].includes(pageState.action as Action) ? (
+              <Box display="flex" alignItems="center">
+                <FormGroup row>
+                  <TextField
+                    variant="filled"
+                    placeholder="Convert"
+                    type="number"
+                    size="small"
+                    value={convertionValue}
+                    className="mui-number-field"
+                    error={!convertionValue}
+                    inputProps={{ step: 0.01 }}
+                    InputProps={{
+                      sx: {
+                        borderTopRightRadius: 0,
+                        borderBottomRightRadius: 0,
+                      },
+                      endAdornment: (
+                        <Tooltip title="Convert serving size">
+                          <InfoIcon
+                            sx={{
+                              fontSize: 15,
+                            }}
+                          />
+                        </Tooltip>
+                      ),
+                    }}
+                    sx={{
+                      "& .MuiInputBase-input": {
+                        // fontSize: 15,
+                        height: 14,
+                        padding: 1,
+                        width: 60,
+                      },
+                    }}
+                    onChange={(e) =>
+                      setConvertionValue(parseFloat(e.target.value))
+                    }
+                    onBlur={(e) => {
+                      if (parseFloat(e.target.value) < 0.01 || !e.target.value)
+                        setConvertionValue(
+                          parseFloat(productParamsState.servingSize)
+                        );
+                    }}
+                  />
+                  <LoadingButton
+                    variant="contained"
+                    disableElevation
+                    size="small"
+                    sx={{
+                      borderTopLeftRadius: 0,
+                      borderBottomLeftRadius: 0,
+                      height: 30,
+                    }}
+                    disabled={
+                      pageState.status === Status.LOADING ||
+                      convertionValue < 0.01 ||
+                      !convertionValue
+                    }
+                    loading={pageState.status === Status.LOADING}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setProductParamsState((prevState) => ({
+                        ...prevState,
+                        servingSize: convertionValue.toFixed(2),
+                        calorie: (
+                          parseFloat(prevState.calorie) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                        carbohydrate: (
+                          parseFloat(prevState.carbohydrate) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                        protein: (
+                          parseFloat(prevState.protein) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                        fat: (
+                          parseFloat(prevState.fat) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                        sugar: (
+                          parseFloat(prevState.sugar) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                        fiber: (
+                          parseFloat(prevState.fiber) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                        saturatedFat: (
+                          parseFloat(prevState.saturatedFat) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                        cholesterol: (
+                          parseFloat(prevState.cholesterol) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                        sodium: (
+                          parseFloat(prevState.sodium) *
+                          (convertionValue / parseFloat(prevState.servingSize))
+                        ).toFixed(2),
+                      }));
+                    }}
+                  >
+                    <CachedIcon />
+                  </LoadingButton>
+                </FormGroup>
+              </Box>
+            ) : null}
           </Grid>
           {numberFields.map((field) => (
             <Grid key={`${field.label}-grid-item`} item xs={field.gridSize}>
