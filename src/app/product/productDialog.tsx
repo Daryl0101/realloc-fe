@@ -553,18 +553,36 @@ const ProductDialog = ({
                     servingSize: parseFloat(newValue.serving_quantity).toFixed(
                       2
                     ),
-                    calorie: newValue.nutriments["energy-kcal"].toFixed(2),
-                    carbohydrate: newValue.nutriments.carbohydrates.toFixed(2),
-                    protein: newValue.nutriments.proteins.toFixed(2),
-                    fat: newValue.nutriments.fat.toFixed(2),
-                    sugar: newValue.nutriments.sugars.toFixed(2),
-                    fiber: newValue.nutriments.fiber.toFixed(2),
-                    saturatedFat:
-                      newValue.nutriments["saturated-fat"].toFixed(2),
+                    calorie: parseFloat(
+                      newValue.nutriments["energy-kcal"].toString()
+                    ).toFixed(2),
+                    carbohydrate: parseFloat(
+                      newValue.nutriments.carbohydrates.toString()
+                    ).toFixed(2),
+                    protein: parseFloat(
+                      newValue.nutriments.proteins.toString()
+                    ).toFixed(2),
+                    fat: parseFloat(newValue.nutriments.fat.toString()).toFixed(
+                      2
+                    ),
+                    sugar: parseFloat(
+                      newValue.nutriments.sugars.toString()
+                    ).toFixed(2),
+                    fiber: parseFloat(
+                      newValue.nutriments.fiber.toString()
+                    ).toFixed(2),
+                    saturatedFat: parseFloat(
+                      newValue.nutriments["saturated-fat"].toString()
+                    ).toFixed(2),
                     sodium:
                       newValue.nutriments.sodium_unit === "g"
-                        ? (newValue.nutriments.sodium * 1000).toFixed(2)
-                        : newValue.nutriments.sodium.toFixed(2),
+                        ? (
+                            parseFloat(newValue.nutriments.sodium.toString()) *
+                            1000
+                          ).toFixed(2)
+                        : parseFloat(
+                            newValue.nutriments.sodium.toString()
+                          ).toFixed(2),
                   }));
               }}
               renderInput={(params) => (
