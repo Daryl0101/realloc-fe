@@ -26,7 +26,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { AiOutlineTrademark } from "react-icons/ai";
 import { Role } from "../lib/utils";
-import { Box, Link } from "@mui/material";
+import { Box, colors, Link } from "@mui/material";
 import { signOut } from "next-auth/react";
 import NotificationDropdown from "./notificationDropdown";
 import { registerFCMTokenAPICall } from "../apiCall/notification/registerFCMTokenAPICall";
@@ -295,7 +295,7 @@ export default function Navigation(props: {
                 <Link
                   href={props.user.role === Role.manager ? "/" : "/family"}
                   underline="none"
-                  color={theme.palette.text.primary}
+                  color={colors.common.white}
                   fontFamily="cursive"
                 >
                   ReAlloc

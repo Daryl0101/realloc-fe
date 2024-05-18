@@ -41,6 +41,7 @@ import AdjustInventoryDialog from "./adjustInventoryDialog";
 import ViewInventoryDialog from "./viewInventoryDialog";
 import dayjs from "dayjs";
 import { useSearchParams } from "next/navigation";
+import theme from "@/src/lib/theme";
 
 type SearchParams = {
   inventoryNo: string;
@@ -510,7 +511,15 @@ const Inventory = () => {
           }}
           getRowClassName={(params) =>
             dayjs(params.row.expiration_date) <= dayjs().locale("ms-my")
-              ? "bg-red-400 dark:bg-red-950"
+              ? theme.palette.mode === "dark"
+                ? "bg-red-950"
+                : "bg-red-100"
+              : dayjs(params.row.expiration_date) > dayjs().locale("ms-my") &&
+                dayjs(params.row.expiration_date) <=
+                  dayjs().add(7, "days").locale("ms-my")
+              ? theme.palette.mode === "dark"
+                ? "bg-yellow-950"
+                : "bg-yellow-100"
               : ""
           }
           sx={{ p: 1 }}
