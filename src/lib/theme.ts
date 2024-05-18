@@ -18,11 +18,12 @@ const theme = createTheme({
       // dark: "#ba000d",
       contrastText: "#fff",
     },
-    // background: {
-    //   default: "#f5f5f5",
-    //   paper: "#fff",
-    // },
-    mode: "dark",
+    // mode: "dark",
+    // Styling for light mode (comment out background when using dark mode)
+    background: {
+      default: "#f5f5f5",
+      paper: "#fff",
+    },
   },
   components: {
     MuiTimeline: {
