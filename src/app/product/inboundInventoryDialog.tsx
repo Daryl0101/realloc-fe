@@ -34,6 +34,7 @@ import {
   LinearProgress,
   Paper,
   Slider,
+  Stack,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -57,6 +58,7 @@ import {
   GridToolbar,
 } from "@mui/x-data-grid";
 import CustomNoRowsOverlay from "@/src/components/dataGrid/noRowsOverlay";
+import AssistantIcon from "@mui/icons-material/Assistant";
 import { retrieveStorageAPICall } from "../../apiCall/sysref/retrieveStorageAPICall";
 import { useSnackbar } from "notistack";
 
@@ -730,11 +732,16 @@ const InboundInventoryDialog = ({
             <Divider></Divider>
           </Grid>
           <Grid item xs={12}>
-            <DialogContentText>
-              {inventoryParamsState.storage.id <= 0
-                ? "Select a Storage from the list below"
-                : "Storage Details"}
-            </DialogContentText>
+            {inventoryParamsState.storage.id <= 0 ? (
+              <Stack direction="row" spacing={1}>
+                <DialogContentText>
+                  Select a Storage from the list below
+                </DialogContentText>
+                <AssistantIcon color="disabled" />
+              </Stack>
+            ) : (
+              <DialogContentText>Storage Details</DialogContentText>
+            )}
           </Grid>
           <Grid item xs={12}>
             <Box
@@ -800,7 +807,17 @@ const InboundInventoryDialog = ({
                     loadingOverlay: LinearProgress,
                     toolbar: GridToolbar,
                   }}
-                  sx={{ p: 1, width: "100%" }}
+                  sx={{
+                    p: 1,
+                    width: "100%",
+                    ".MuiDataGrid-cell:focus": {
+                      outline: "none",
+                    },
+                    // pointer cursor on ALL rows
+                    "& .MuiDataGrid-row:hover": {
+                      cursor: "pointer",
+                    },
+                  }}
                   rows={searchStorageResultState}
                   columns={columns}
                   loading={pageState.status === Status.LOADING}

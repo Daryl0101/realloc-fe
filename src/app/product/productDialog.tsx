@@ -588,6 +588,7 @@ const ProductDialog = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  required
                   name="productName"
                   label="Product Name"
                   InputProps={{
