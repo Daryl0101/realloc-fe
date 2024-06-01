@@ -58,6 +58,7 @@ const ProductActions = ({
     const result = await deleteProductAPICall(params.row.id);
     if (result.success) {
       enqueueSnackbar(result.success, { variant: "success" });
+      searchProduct();
     } else if (result.error) {
       if (typeof result.error === "string")
         enqueueSnackbar(result.error, { variant: "error" });
@@ -67,7 +68,7 @@ const ProductActions = ({
         });
       }
     }
-    searchProduct();
+    // searchProduct();
 
     setPageState((prevState) => ({ ...prevState, status: Status.OPEN }));
   };
