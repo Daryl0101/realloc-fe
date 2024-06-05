@@ -23,6 +23,12 @@ export enum Status {
   LOADING = "Loading",
 }
 
+export enum ImageCaptureStatus {
+  NONE = "None", // Webcam is closed (default)
+  CAPTURING = "Capturing", // Webcam is open
+  LOADING = "Loading", // Webcam is closed, but image is being processed
+}
+
 export enum Role {
   manager = "manager",
   volunteer = "volunteer",
@@ -202,3 +208,17 @@ export const getCurrentDateTimeString = () => {
 //   return value !== null && typeof value === 'object';
 
 // };
+
+export const DataURIToBlob = (dataURI: string) => {
+  const splitDataURI = dataURI.split(",");
+  const byteString =
+    splitDataURI[0].indexOf("base64") >= 0
+      ? atob(splitDataURI[1])
+      : decodeURI(splitDataURI[1]);
+  const mimeString = splitDataURI[0].split(":")[1].split(";")[0];
+
+  const ia = new Uint8Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+
+  return new Blob([ia], { type: mimeString });
+};

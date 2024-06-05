@@ -1,6 +1,7 @@
 import {
   Action,
   HalalStatus,
+  ImageCaptureStatus,
   OFFPaginatedResponse,
   Status,
   parseDateTimeStringToFormattedDateTime,
@@ -43,6 +44,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 import { searchOFFAPICall } from "@/src/apiCall/off/searchOFFAPICall";
 import { useDebounce } from "@/src/lib/hooks/useDebounce";
+import WebcamCanvas from "./webcamCanvas";
 
 type OFFNutrimentsResult = {
   "energy-kcal": number;
@@ -150,6 +152,8 @@ const ProductDialog = ({
     productNameAutocompleteFieldStatus,
     setProductNameAutocompleteFieldStatus,
   ] = React.useState<Status>(Status.OPEN);
+  const [productNERCaptureStatus, setproductNERCaptureStatus] =
+    React.useState<ImageCaptureStatus>(ImageCaptureStatus.NONE);
   const [convertionValue, setConvertionValue] = React.useState<number>(0);
   const [OFFResultState, setOFFResultState] =
     React.useState<OFFPaginatedResponse<OFFResult> | null>(null); // Open Food Facts API result
@@ -506,238 +510,245 @@ const ProductDialog = ({
   }
 
   return (
-    <Dialog
-      open={
-        Array<Action | string>(Action.ADD, Action.VIEW, Action.EDIT).includes(
-          pageState.action
-        ) && [Status.OPEN, Status.LOADING].includes(pageState.status)
-      }
-      onClose={handleDialogClose}
-      PaperProps={{
-        component: "form",
-        onSubmit: onSubmit,
-      }}
-    >
-      <DialogTitle>{dialogTitle}</DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2} pt={1}>
-          <Grid item xs={12}>
-            <DialogContentText>Product Details</DialogContentText>
-          </Grid>
-          <Grid item xs={12}>
-            <Autocomplete
-              freeSolo
-              disableClearable
-              readOnly={pageState.action === Action.VIEW}
-              disabled={
-                pageState.status === Status.LOADING ||
-                pageState.action === Action.EDIT
-              }
-              loading={productNameAutocompleteFieldStatus === Status.LOADING}
-              value={productParamsState.productName}
-              options={OFFResultState ? OFFResultState.products : []}
-              getOptionLabel={(option) =>
-                typeof option === "string" ? option : option.product_name
-              }
-              onChange={(event, newValue) => {
-                if (newValue === null) return;
-                if (typeof newValue === "string")
-                  setProductParamsState((prevState) => ({
-                    ...prevState,
-                    productName: newValue,
-                  }));
-                else
-                  setProductParamsState((prevState) => ({
-                    ...prevState,
-                    productName: newValue.product_name,
-                    servingSize: parseFloat(newValue.serving_quantity).toFixed(
-                      2
-                    ),
-                    calorie: parseFloat(
-                      newValue.nutriments["energy-kcal"].toString()
-                    ).toFixed(2),
-                    carbohydrate: parseFloat(
-                      newValue.nutriments.carbohydrates.toString()
-                    ).toFixed(2),
-                    protein: parseFloat(
-                      newValue.nutriments.proteins.toString()
-                    ).toFixed(2),
-                    fat: parseFloat(newValue.nutriments.fat.toString()).toFixed(
-                      2
-                    ),
-                    sugar: parseFloat(
-                      newValue.nutriments.sugars.toString()
-                    ).toFixed(2),
-                    fiber: parseFloat(
-                      newValue.nutriments.fiber.toString()
-                    ).toFixed(2),
-                    saturatedFat: parseFloat(
-                      newValue.nutriments["saturated-fat"].toString()
-                    ).toFixed(2),
-                    sodium:
-                      newValue.nutriments.sodium_unit === "g"
-                        ? (
-                            parseFloat(newValue.nutriments.sodium.toString()) *
-                            1000
-                          ).toFixed(2)
-                        : parseFloat(
-                            newValue.nutriments.sodium.toString()
-                          ).toFixed(2),
-                  }));
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  required
-                  name="productName"
-                  label="Product Name"
-                  InputProps={{
-                    ...params.InputProps,
-                    // type: "search",
-                    endAdornment: (
-                      <>
-                        {productNameAutocompleteFieldStatus ===
-                        Status.LOADING ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {productParamsState.productName &&
-                        pageState.action === Action.ADD ? (
-                          <IconButton
-                            onClick={() => {
-                              setProductParamsState((prevState) => ({
-                                ...prevState,
-                                productName: "",
-                              }));
-                              setOFFResultState(null);
-                            }}
-                          >
-                            <CloseIcon />
-                          </IconButton>
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                  onChange={(e) => {
-                    e.preventDefault();
+    <>
+      <WebcamCanvas
+        productNERCaptureStatus={productNERCaptureStatus}
+        setProductNERCaptureStatus={setproductNERCaptureStatus}
+        setProductParamsState={setProductParamsState}
+      />
+      <Dialog
+        open={
+          Array<Action | string>(Action.ADD, Action.VIEW, Action.EDIT).includes(
+            pageState.action
+          ) && [Status.OPEN, Status.LOADING].includes(pageState.status)
+        }
+        onClose={handleDialogClose}
+        PaperProps={{
+          component: "form",
+          onSubmit: onSubmit,
+        }}
+      >
+        <DialogTitle>{dialogTitle}</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} pt={1}>
+            <Grid item xs={12}>
+              <DialogContentText>Product Details</DialogContentText>
+            </Grid>
+            <Grid item xs={12}>
+              <Autocomplete
+                freeSolo
+                disableClearable
+                readOnly={pageState.action === Action.VIEW}
+                disabled={
+                  pageState.status === Status.LOADING ||
+                  pageState.action === Action.EDIT
+                }
+                loading={productNameAutocompleteFieldStatus === Status.LOADING}
+                value={productParamsState.productName}
+                options={OFFResultState ? OFFResultState.products : []}
+                getOptionLabel={(option) =>
+                  typeof option === "string" ? option : option.product_name
+                }
+                onChange={(event, newValue) => {
+                  if (newValue === null) return;
+                  if (typeof newValue === "string")
                     setProductParamsState((prevState) => ({
                       ...prevState,
-                      productName: e.target.value,
+                      productName: newValue,
                     }));
-                  }}
-                  onKeyUp={delayedSearchOFF}
-                />
-              )}
-              renderOption={(props, option) => {
-                return (
-                  <li
-                    {...props}
-                    key={`${option.code}-tooltip`}
-                    style={{ display: "flex", marginTop: 2 }}
-                  >
-                    <Grid container>
-                      <Grid item xs={12}>
-                        {option.product_name}
+                  else
+                    setProductParamsState((prevState) => ({
+                      ...prevState,
+                      productName: newValue.product_name,
+                      servingSize: parseFloat(
+                        newValue.serving_quantity
+                      ).toFixed(2),
+                      calorie: parseFloat(
+                        newValue.nutriments["energy-kcal"].toString()
+                      ).toFixed(2),
+                      carbohydrate: parseFloat(
+                        newValue.nutriments.carbohydrates.toString()
+                      ).toFixed(2),
+                      protein: parseFloat(
+                        newValue.nutriments.proteins.toString()
+                      ).toFixed(2),
+                      fat: parseFloat(
+                        newValue.nutriments.fat.toString()
+                      ).toFixed(2),
+                      sugar: parseFloat(
+                        newValue.nutriments.sugars.toString()
+                      ).toFixed(2),
+                      fiber: parseFloat(
+                        newValue.nutriments.fiber.toString()
+                      ).toFixed(2),
+                      saturatedFat: parseFloat(
+                        newValue.nutriments["saturated-fat"].toString()
+                      ).toFixed(2),
+                      sodium:
+                        newValue.nutriments.sodium_unit === "g"
+                          ? (
+                              parseFloat(
+                                newValue.nutriments.sodium.toString()
+                              ) * 1000
+                            ).toFixed(2)
+                          : parseFloat(
+                              newValue.nutriments.sodium.toString()
+                            ).toFixed(2),
+                    }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    required
+                    name="productName"
+                    label="Product Name"
+                    InputProps={{
+                      ...params.InputProps,
+                      // type: "search",
+                      endAdornment: (
+                        <>
+                          {productNameAutocompleteFieldStatus ===
+                          Status.LOADING ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
+                          {productParamsState.productName &&
+                          pageState.action === Action.ADD ? (
+                            <IconButton
+                              onClick={() => {
+                                setProductParamsState((prevState) => ({
+                                  ...prevState,
+                                  productName: "",
+                                }));
+                                setOFFResultState(null);
+                              }}
+                            >
+                              <CloseIcon />
+                            </IconButton>
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      setProductParamsState((prevState) => ({
+                        ...prevState,
+                        productName: e.target.value,
+                      }));
+                    }}
+                    onKeyUp={delayedSearchOFF}
+                  />
+                )}
+                renderOption={(props, option) => {
+                  return (
+                    <li
+                      {...props}
+                      key={`${option.code}-tooltip`}
+                      style={{ display: "flex", marginTop: 2 }}
+                    >
+                      <Grid container>
+                        <Grid item xs={12}>
+                          {option.product_name}
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Serving Size
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.serving_quantity} g
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Calorie
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.nutriments["energy-kcal"]} kcal
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Carbohydrate
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.nutriments.carbohydrates} g
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Protein
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.nutriments.proteins} g
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Fat
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.nutriments.fat} g
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Sugar
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.nutriments.sugars} g
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Fiber
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.nutriments.fiber} g
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Saturated Fat
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.nutriments["saturated-fat"]} g
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            Sodium
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography color="textSecondary" variant="body2">
+                            {option.nutriments.sodium_unit === "g"
+                              ? option.nutriments.sodium * 1000
+                              : option.nutriments.sodium}{" "}
+                            mg
+                          </Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Serving Size
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.serving_quantity} g
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Calorie
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.nutriments["energy-kcal"]} kcal
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Carbohydrate
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.nutriments.carbohydrates} g
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Protein
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.nutriments.proteins} g
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Fat
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.nutriments.fat} g
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Sugar
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.nutriments.sugars} g
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Fiber
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.nutriments.fiber} g
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Saturated Fat
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.nutriments["saturated-fat"]} g
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          Sodium
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="textSecondary" variant="body2">
-                          {option.nutriments.sodium_unit === "g"
-                            ? option.nutriments.sodium * 1000
-                            : option.nutriments.sodium}{" "}
-                          mg
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </li>
-                );
-              }}
-            />
-            {/* <TextField
+                    </li>
+                  );
+                }}
+              />
+              {/* <TextField
               name="productName"
               variant="outlined"
               label="Product Name"
@@ -755,99 +766,99 @@ const ProductDialog = ({
                 pageState.action === Action.EDIT
               }
             /> */}
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              name="description"
-              variant="outlined"
-              value={productParamsState.description}
-              multiline
-              rows={4}
-              label="Description"
-              fullWidth
-              autoComplete="off"
-              onChange={handleFieldChange}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") event.preventDefault();
-              }}
-              InputProps={{
-                readOnly: pageState.action === Action.VIEW,
-              }}
-              disabled={
-                pageState.status === Status.LOADING ||
-                pageState.action === Action.EDIT
-              }
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Autocomplete
-              readOnly={pageState.action === Action.VIEW}
-              id="categories-select-field"
-              multiple
-              getOptionLabel={(option) => option.name}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              //   filterOptions={(options) => options} // This is commented as it will cause the autocomplete to filter by descriptions as well
-              options={foodCategories}
-              //   autoComplete
-              //   includeInputInList
-              //   filterSelectedOptions
-              onOpen={() => searchFoodCategories("")}
-              value={productParamsState.categories}
-              loading={foodCategoryAutocompleteFieldStatus === Status.LOADING}
-              onChange={(event, newValue) => {
-                setProductParamsState((prevState) => ({
-                  ...prevState,
-                  categories: newValue,
-                }));
-              }}
-              onInputChange={handleAutocompleteInputChange}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Categories"
-                  placeholder="Search"
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {foodCategoryAutocompleteFieldStatus ===
-                        Status.LOADING ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-              renderOption={(props, option) => {
-                return (
-                  <Tooltip
-                    key={`${option.name}-tooltip`}
-                    title={option.description}
-                    placement="top-start"
-                  >
-                    <li {...props} key={option.name}>
-                      {option.name}
-                    </li>
-                  </Tooltip>
-                );
-              }}
-              renderTags={(tagValue, getTagProps) => {
-                return tagValue.map((option, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    key={option.name}
-                    label={option.name}
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="description"
+                variant="outlined"
+                value={productParamsState.description}
+                multiline
+                rows={4}
+                label="Description"
+                fullWidth
+                autoComplete="off"
+                onChange={handleFieldChange}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") event.preventDefault();
+                }}
+                InputProps={{
+                  readOnly: pageState.action === Action.VIEW,
+                }}
+                disabled={
+                  pageState.status === Status.LOADING ||
+                  pageState.action === Action.EDIT
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Autocomplete
+                readOnly={pageState.action === Action.VIEW}
+                id="categories-select-field"
+                multiple
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                //   filterOptions={(options) => options} // This is commented as it will cause the autocomplete to filter by descriptions as well
+                options={foodCategories}
+                //   autoComplete
+                //   includeInputInList
+                //   filterSelectedOptions
+                onOpen={() => searchFoodCategories("")}
+                value={productParamsState.categories}
+                loading={foodCategoryAutocompleteFieldStatus === Status.LOADING}
+                onChange={(event, newValue) => {
+                  setProductParamsState((prevState) => ({
+                    ...prevState,
+                    categories: newValue,
+                  }));
+                }}
+                onInputChange={handleAutocompleteInputChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Categories"
+                    placeholder="Search"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {foodCategoryAutocompleteFieldStatus ===
+                          Status.LOADING ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
                   />
-                ));
-              }}
-              disabled={
-                pageState.status === Status.LOADING ||
-                pageState.action === Action.EDIT
-              }
-            />
-            {/* <FormControl fullWidth>
+                )}
+                renderOption={(props, option) => {
+                  return (
+                    <Tooltip
+                      key={`${option.name}-tooltip`}
+                      title={option.description}
+                      placement="top-start"
+                    >
+                      <li {...props} key={option.name}>
+                        {option.name}
+                      </li>
+                    </Tooltip>
+                  );
+                }}
+                renderTags={(tagValue, getTagProps) => {
+                  return tagValue.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.name}
+                      label={option.name}
+                    />
+                  ));
+                }}
+                disabled={
+                  pageState.status === Status.LOADING ||
+                  pageState.action === Action.EDIT
+                }
+              />
+              {/* <FormControl fullWidth>
                 <InputLabel id="categories-select-field-label">
                   Categories
                 </InputLabel>
@@ -870,289 +881,312 @@ const ProductDialog = ({
                   // }}
                 ></Select>
               </FormControl> */}
-          </Grid>
-          <Grid item xs={12}>
-            <ToggleButtonGroup
-              color="primary"
-              exclusive
-              aria-label="halalStatus"
-              fullWidth
-              onChange={handleHalalToggleButtonFieldChange}
-              value={productParamsState.halalStatus}
-              disabled={
-                pageState.status === Status.LOADING ||
-                pageState.action === Action.VIEW ||
-                pageState.action === Action.EDIT
-              }
-            >
-              {[HalalStatus.Halal, HalalStatus["Non Halal"]].map((value) => {
-                return (
-                  <ToggleButton key={HalalStatus[value]} value={value}>
-                    {HalalStatus[value]}
-                  </ToggleButton>
-                );
-              })}
-            </ToggleButtonGroup>
-          </Grid>
-          <Grid item xs={12}>
-            <Divider></Divider>
-          </Grid>
-          <Grid item xs={12} display="flex" justifyContent="space-between">
-            <Box display="flex" alignItems="center" gap={1}>
-              <DialogContentText>Product Nutritions</DialogContentText>
+            </Grid>
+            <Grid item xs={12}>
+              <ToggleButtonGroup
+                color="primary"
+                exclusive
+                aria-label="halalStatus"
+                fullWidth
+                onChange={handleHalalToggleButtonFieldChange}
+                value={productParamsState.halalStatus}
+                disabled={
+                  pageState.status === Status.LOADING ||
+                  pageState.action === Action.VIEW ||
+                  pageState.action === Action.EDIT
+                }
+              >
+                {[HalalStatus.Halal, HalalStatus["Non Halal"]].map((value) => {
+                  return (
+                    <ToggleButton key={HalalStatus[value]} value={value}>
+                      {HalalStatus[value]}
+                    </ToggleButton>
+                  );
+                })}
+              </ToggleButtonGroup>
+            </Grid>
+            <Grid item xs={12}>
+              <Divider></Divider>
+            </Grid>
+            <Grid item xs={12} display="flex" justifyContent="space-between">
+              <Box display="flex" alignItems="center" gap={1}>
+                <DialogContentText>Product Nutritions</DialogContentText>
+                {[Action.ADD, Action.EDIT].includes(
+                  pageState.action as Action
+                ) ? (
+                  <Tooltip title="Scan product nutrition label">
+                    <IconButton
+                      onClick={(event) => {
+                        setproductNERCaptureStatus(
+                          ImageCaptureStatus.CAPTURING
+                        );
+                      }}
+                    >
+                      <DocumentScannerIcon color="action" />
+                    </IconButton>
+                  </Tooltip>
+                ) : null}
+              </Box>
               {[Action.ADD, Action.EDIT].includes(
                 pageState.action as Action
               ) ? (
-                <Tooltip title="Scan product nutrition label">
-                  <IconButton>
-                    <DocumentScannerIcon color="action" />
-                  </IconButton>
-                </Tooltip>
+                <Box display="flex" alignItems="center">
+                  <FormGroup row>
+                    <TextField
+                      variant="filled"
+                      placeholder="Convert"
+                      type="number"
+                      size="small"
+                      value={convertionValue}
+                      className="mui-number-field"
+                      error={!convertionValue}
+                      inputProps={{ step: 0.01 }}
+                      InputProps={{
+                        sx: {
+                          borderTopRightRadius: 0,
+                          borderBottomRightRadius: 0,
+                        },
+                        endAdornment: (
+                          <Tooltip title="Convert serving size">
+                            <InfoIcon
+                              sx={{
+                                fontSize: 15,
+                              }}
+                            />
+                          </Tooltip>
+                        ),
+                      }}
+                      sx={{
+                        "& .MuiInputBase-input": {
+                          // fontSize: 15,
+                          height: 14,
+                          padding: 1,
+                          width: 60,
+                        },
+                      }}
+                      onChange={(e) =>
+                        setConvertionValue(parseFloat(e.target.value))
+                      }
+                      onBlur={(e) => {
+                        if (
+                          parseFloat(e.target.value) < 0.01 ||
+                          !e.target.value
+                        )
+                          setConvertionValue(
+                            parseFloat(productParamsState.servingSize)
+                          );
+                      }}
+                    />
+                    <LoadingButton
+                      variant="contained"
+                      disableElevation
+                      size="small"
+                      sx={{
+                        borderTopLeftRadius: 0,
+                        borderBottomLeftRadius: 0,
+                        height: 30,
+                      }}
+                      disabled={
+                        pageState.status === Status.LOADING ||
+                        convertionValue < 0.01 ||
+                        !convertionValue
+                      }
+                      loading={pageState.status === Status.LOADING}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setProductParamsState((prevState) => ({
+                          ...prevState,
+                          servingSize: convertionValue.toFixed(2),
+                          calorie: (
+                            parseFloat(prevState.calorie) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                          carbohydrate: (
+                            parseFloat(prevState.carbohydrate) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                          protein: (
+                            parseFloat(prevState.protein) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                          fat: (
+                            parseFloat(prevState.fat) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                          sugar: (
+                            parseFloat(prevState.sugar) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                          fiber: (
+                            parseFloat(prevState.fiber) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                          saturatedFat: (
+                            parseFloat(prevState.saturatedFat) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                          cholesterol: (
+                            parseFloat(prevState.cholesterol) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                          sodium: (
+                            parseFloat(prevState.sodium) *
+                            (convertionValue /
+                              parseFloat(prevState.servingSize))
+                          ).toFixed(2),
+                        }));
+                      }}
+                    >
+                      <CachedIcon />
+                    </LoadingButton>
+                  </FormGroup>
+                </Box>
               ) : null}
-            </Box>
-            {[Action.ADD, Action.EDIT].includes(pageState.action as Action) ? (
-              <Box display="flex" alignItems="center">
-                <FormGroup row>
-                  <TextField
-                    variant="filled"
-                    placeholder="Convert"
-                    type="number"
-                    size="small"
-                    value={convertionValue}
-                    className="mui-number-field"
-                    error={!convertionValue}
-                    inputProps={{ step: 0.01 }}
-                    InputProps={{
-                      sx: {
-                        borderTopRightRadius: 0,
-                        borderBottomRightRadius: 0,
-                      },
-                      endAdornment: (
-                        <Tooltip title="Convert serving size">
-                          <InfoIcon
-                            sx={{
-                              fontSize: 15,
-                            }}
-                          />
-                        </Tooltip>
-                      ),
-                    }}
-                    sx={{
-                      "& .MuiInputBase-input": {
-                        // fontSize: 15,
-                        height: 14,
-                        padding: 1,
-                        width: 60,
-                      },
-                    }}
-                    onChange={(e) =>
-                      setConvertionValue(parseFloat(e.target.value))
-                    }
-                    onBlur={(e) => {
-                      if (parseFloat(e.target.value) < 0.01 || !e.target.value)
-                        setConvertionValue(
-                          parseFloat(productParamsState.servingSize)
-                        );
-                    }}
-                  />
-                  <LoadingButton
-                    variant="contained"
-                    disableElevation
-                    size="small"
-                    sx={{
-                      borderTopLeftRadius: 0,
-                      borderBottomLeftRadius: 0,
-                      height: 30,
-                    }}
-                    disabled={
-                      pageState.status === Status.LOADING ||
-                      convertionValue < 0.01 ||
-                      !convertionValue
-                    }
-                    loading={pageState.status === Status.LOADING}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setProductParamsState((prevState) => ({
-                        ...prevState,
-                        servingSize: convertionValue.toFixed(2),
-                        calorie: (
-                          parseFloat(prevState.calorie) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                        carbohydrate: (
-                          parseFloat(prevState.carbohydrate) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                        protein: (
-                          parseFloat(prevState.protein) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                        fat: (
-                          parseFloat(prevState.fat) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                        sugar: (
-                          parseFloat(prevState.sugar) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                        fiber: (
-                          parseFloat(prevState.fiber) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                        saturatedFat: (
-                          parseFloat(prevState.saturatedFat) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                        cholesterol: (
-                          parseFloat(prevState.cholesterol) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                        sodium: (
-                          parseFloat(prevState.sodium) *
-                          (convertionValue / parseFloat(prevState.servingSize))
-                        ).toFixed(2),
-                      }));
-                    }}
-                  >
-                    <CachedIcon />
-                  </LoadingButton>
-                </FormGroup>
-              </Box>
+            </Grid>
+            {numberFields.map((field) => (
+              <Grid key={`${field.label}-grid-item`} item xs={field.gridSize}>
+                <TextField
+                  name={field.name}
+                  variant="outlined"
+                  label={field.label}
+                  value={field.value}
+                  error={parseFloat(field.value) < field.minVal}
+                  type="number"
+                  inputProps={{ step: 0.01 }}
+                  fullWidth
+                  required
+                  autoComplete="off"
+                  onFocus={handleFieldFocus}
+                  onChange={handleFieldChange}
+                  onBlur={handleNumberFieldBlur}
+                  disabled={pageState.status === Status.LOADING}
+                  InputProps={{
+                    readOnly: pageState.action === Action.VIEW,
+                  }}
+                />
+              </Grid>
+            ))}
+            {Array<Action | string>(Action.VIEW, Action.EDIT).includes(
+              pageState.action
+            ) ? (
+              <>
+                <Grid item xs={12}>
+                  <Divider></Divider>
+                </Grid>
+                <Grid item xs={12}>
+                  <DialogContentText>Metadata Information</DialogContentText>
+                </Grid>
+                {[
+                  {
+                    key: "modifiedAt",
+                    label: "Modified At",
+                    value: productParamsState.modifiedAt,
+                  },
+                  {
+                    key: "createdAt",
+                    label: "Created At",
+                    value: productParamsState.createdAt,
+                  },
+                  {
+                    key: "modifiedBy",
+                    label: "Modified By",
+                    value: productParamsState.modifiedBy,
+                  },
+                  {
+                    key: "createdBy",
+                    label: "Created By",
+                    value: productParamsState.createdBy,
+                  },
+                ].map((field) => {
+                  return (
+                    <Grid key={field.key} item xs={6}>
+                      <TextField
+                        disabled
+                        label={field.label}
+                        value={
+                          ["modifiedAt", "createdAt"].includes(field.key)
+                            ? parseDateTimeStringToFormattedDateTime(
+                                field.value
+                              )
+                            : field.value
+                        }
+                        name={field.key}
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
+                  );
+                })}
+              </>
             ) : null}
           </Grid>
-          {numberFields.map((field) => (
-            <Grid key={`${field.label}-grid-item`} item xs={field.gridSize}>
-              <TextField
-                name={field.name}
-                variant="outlined"
-                label={field.label}
-                value={field.value}
-                error={parseFloat(field.value) < field.minVal}
-                type="number"
-                inputProps={{ step: 0.01 }}
-                fullWidth
-                required
-                autoComplete="off"
-                onFocus={handleFieldFocus}
-                onChange={handleFieldChange}
-                onBlur={handleNumberFieldBlur}
-                disabled={pageState.status === Status.LOADING}
-                InputProps={{
-                  readOnly: pageState.action === Action.VIEW,
-                }}
-              />
-            </Grid>
-          ))}
-          {Array<Action | string>(Action.VIEW, Action.EDIT).includes(
-            pageState.action
-          ) ? (
-            <>
-              <Grid item xs={12}>
-                <Divider></Divider>
-              </Grid>
-              <Grid item xs={12}>
-                <DialogContentText>Metadata Information</DialogContentText>
-              </Grid>
-              {[
-                {
-                  key: "modifiedAt",
-                  label: "Modified At",
-                  value: productParamsState.modifiedAt,
-                },
-                {
-                  key: "createdAt",
-                  label: "Created At",
-                  value: productParamsState.createdAt,
-                },
-                {
-                  key: "modifiedBy",
-                  label: "Modified By",
-                  value: productParamsState.modifiedBy,
-                },
-                {
-                  key: "createdBy",
-                  label: "Created By",
-                  value: productParamsState.createdBy,
-                },
-              ].map((field) => {
-                return (
-                  <Grid key={field.key} item xs={6}>
-                    <TextField
-                      disabled
-                      label={field.label}
-                      value={
-                        ["modifiedAt", "createdAt"].includes(field.key)
-                          ? parseDateTimeStringToFormattedDateTime(field.value)
-                          : field.value
-                      }
-                      name={field.key}
-                      variant="outlined"
-                      fullWidth
-                    />
-                  </Grid>
-                );
-              })}
-            </>
-          ) : null}
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <LoadingButton
-          loading={pageState.status === Status.LOADING}
-          variant="outlined"
-          color="error"
-          onClick={handleDialogClose}
-          disabled={pageState.status === Status.LOADING}
-        >
-          <span>Cancel</span>
-        </LoadingButton>
-        {Array<Action | string>(Action.ADD, Action.EDIT).includes(
-          pageState.action
-        ) ? (
+        </DialogContent>
+        <DialogActions>
           <LoadingButton
             loading={pageState.status === Status.LOADING}
             variant="outlined"
-            onClick={handleResetDialog}
-            disabled={pageState.status === Status.LOADING}
-          >
-            <span>Reset</span>
-          </LoadingButton>
-        ) : null}
-        {Array<Action | string>(Action.VIEW, Action.EDIT).includes(
-          pageState.action
-        ) ? (
-          <LoadingButton
-            loading={pageState.status === Status.LOADING}
-            variant="contained"
             color="error"
-            onClick={handleDeleteProduct}
+            onClick={handleDialogClose}
             disabled={pageState.status === Status.LOADING}
           >
-            <span>Delete</span>
+            <span>Cancel</span>
           </LoadingButton>
-        ) : null}
-        {pageState.action === Action.ADD ? (
-          <LoadingButton
-            loading={pageState.status === Status.LOADING}
-            variant="contained"
-            type="submit"
-            disabled={pageState.status === Status.LOADING}
-          >
-            <span>Add</span>
-          </LoadingButton>
-        ) : null}
-        {pageState.action === Action.EDIT ? (
-          <LoadingButton
-            loading={pageState.status === Status.LOADING}
-            variant="contained"
-            type="submit"
-            disabled={pageState.status === Status.LOADING}
-          >
-            <span>Save</span>
-          </LoadingButton>
-        ) : null}
-      </DialogActions>
-    </Dialog>
+          {Array<Action | string>(Action.ADD, Action.EDIT).includes(
+            pageState.action
+          ) ? (
+            <LoadingButton
+              loading={pageState.status === Status.LOADING}
+              variant="outlined"
+              onClick={handleResetDialog}
+              disabled={pageState.status === Status.LOADING}
+            >
+              <span>Reset</span>
+            </LoadingButton>
+          ) : null}
+          {Array<Action | string>(Action.VIEW, Action.EDIT).includes(
+            pageState.action
+          ) ? (
+            <LoadingButton
+              loading={pageState.status === Status.LOADING}
+              variant="contained"
+              color="error"
+              onClick={handleDeleteProduct}
+              disabled={pageState.status === Status.LOADING}
+            >
+              <span>Delete</span>
+            </LoadingButton>
+          ) : null}
+          {pageState.action === Action.ADD ? (
+            <LoadingButton
+              loading={pageState.status === Status.LOADING}
+              variant="contained"
+              type="submit"
+              disabled={pageState.status === Status.LOADING}
+            >
+              <span>Add</span>
+            </LoadingButton>
+          ) : null}
+          {pageState.action === Action.EDIT ? (
+            <LoadingButton
+              loading={pageState.status === Status.LOADING}
+              variant="contained"
+              type="submit"
+              disabled={pageState.status === Status.LOADING}
+            >
+              <span>Save</span>
+            </LoadingButton>
+          ) : null}
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
