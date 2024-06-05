@@ -1,11 +1,15 @@
 import {
   Box,
+  CircularProgress,
   Dialog,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   Fab,
   IconButton,
+  LinearProgress,
   Stack,
+  Typography,
 } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
@@ -14,13 +18,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import { HalalStatus, ImageCaptureStatus } from "@/src/lib/utils";
 import { NERProductAPICall } from "@/src/apiCall/product/NERProductAPICall";
 import { useSnackbar } from "notistack";
-
-const videoConstraints: MediaTrackConstraints = {
-  width: 640,
-  height: 480,
-  facingMode: "user",
-  //   facingMode: { exact: "environment" },
-};
 
 type FoodCategory = {
   id: number;
@@ -63,7 +60,10 @@ const WebcamCanvas = ({
   setProductNERCaptureStatus,
   setProductParamsState,
 }: Props) => {
-  const webcamRef = useRef<any>(null);
+  const [videoConstraints, setVideoConstraints] =
+    useState<MediaTrackConstraints>({});
+  const [webcamState, setWebcamState] = useState<boolean>(false);
+  const webcamRef = useRef<Webcam>(null);
   const { enqueueSnackbar } = useSnackbar();
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
@@ -106,19 +106,37 @@ const WebcamCanvas = ({
     handleDialogClose();
   };
 
-  //   const capture = useCallback(() => {
-  //     const imageSrc = webcamRef.current.getScreenshot();
-  //     setImgSrc(imageSrc);
-  //   }, [webcamRef, setImgSrc]);
-
   const handleCapture = () => {
+    if (!webcamRef.current) {
+      enqueueSnackbar("Webcam not found", { variant: "error" });
+      return;
+    }
     const imageSrc = webcamRef.current.getScreenshot();
     setImgSrc(imageSrc);
   };
 
   const handleDialogClose = () => {
     setImgSrc(null);
+    setWebcamState(false);
     setProductNERCaptureStatus(ImageCaptureStatus.NONE);
+  };
+
+  const handleCameraPermission = async () => {
+    const permission = await navigator.permissions.query({
+      name: "camera" as PermissionName,
+    });
+
+    if (permission.state === "granted") {
+      return;
+    }
+
+    if (permission.state === "denied") {
+      navigator.mediaDevices.getUserMedia({ video: true });
+    } else if (permission.state === "prompt") {
+      enqueueSnackbar("Camera permission prompt", { variant: "info" });
+    } else {
+      enqueueSnackbar("Webcam not found", { variant: "error" });
+    }
   };
 
   useEffect(() => {
@@ -127,17 +145,43 @@ const WebcamCanvas = ({
     }
   }, [imgSrc]);
 
+  useEffect(() => {
+    setVideoConstraints({
+      width:
+        window.screen.width > window.screen.height
+          ? window.screen.height * 0.5
+          : window.screen.width * 0.5,
+      height:
+        window.screen.width > window.screen.height
+          ? window.screen.height * 0.5
+          : window.screen.width * 0.5,
+      facingMode: "environment",
+    });
+  }, []);
+
   return (
     <Dialog
       open={[ImageCaptureStatus.CAPTURING, ImageCaptureStatus.LOADING].includes(
         productNERCaptureStatus
       )}
-      onClose={handleDialogClose}
+      onClose={() => {
+        if (productNERCaptureStatus === ImageCaptureStatus.LOADING) return;
+        handleDialogClose();
+      }}
+      style={{
+        minWidth: "50%",
+      }}
+      fullWidth
+      scroll="body"
     >
-      <DialogTitle>Capture Nutritional Label</DialogTitle>
+      <DialogTitle>Scan</DialogTitle>
       <IconButton
         aria-label="close"
-        onClick={handleDialogClose}
+        onClick={() => {
+          if (productNERCaptureStatus === ImageCaptureStatus.LOADING) return;
+          handleDialogClose();
+        }}
+        disabled={productNERCaptureStatus === ImageCaptureStatus.LOADING}
         sx={{
           position: "absolute",
           right: 8,
@@ -148,28 +192,88 @@ const WebcamCanvas = ({
         <CloseIcon />
       </IconButton>
       <DialogContent>
-        <Stack spacing={2}>
+        <Stack
+          spacing={2}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          {!webcamState &&
+          productNERCaptureStatus === ImageCaptureStatus.CAPTURING ? (
+            <Stack
+              spacing={2}
+              height={window.screen.height * 0.5}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CircularProgress size={100} />
+              <Typography variant="h5">Starting Camera</Typography>
+            </Stack>
+          ) : null}
           {!imgSrc ? (
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              videoConstraints={videoConstraints}
-              height={"300vh"}
-              //   minScreenshotWidth={30}
-              //   minScreenshotHeight={30}
-            />
+            <Box display={webcamState ? "block" : "none"}>
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                videoConstraints={videoConstraints}
+                // height={"300rem"}
+                onUserMedia={() => {
+                  setWebcamState(true);
+                }}
+                onUserMediaError={handleCameraPermission}
+              />
+            </Box>
           ) : (
-            <img src={imgSrc} alt="captured" />
+            <Box>
+              <LinearProgress
+                sx={{
+                  width:
+                    window.screen.width > window.screen.height
+                      ? window.screen.height * 0.5
+                      : window.screen.width * 0.5,
+                }}
+              />
+              <img
+                src={imgSrc}
+                alt="captured"
+                width={
+                  window.screen.width > window.screen.height
+                    ? window.screen.height * 0.5
+                    : window.screen.width * 0.5
+                }
+                height={
+                  window.screen.width > window.screen.height
+                    ? window.screen.height * 0.5
+                    : window.screen.width * 0.5
+                }
+              />
+            </Box>
           )}
           <Box alignItems="center" justifyContent="center" display="flex">
             <Fab
               color="primary"
               onClick={handleCapture}
-              disabled={productNERCaptureStatus === ImageCaptureStatus.LOADING}
+              disabled={
+                productNERCaptureStatus === ImageCaptureStatus.LOADING ||
+                webcamState === false
+              }
+              sx={{
+                position: "relative",
+              }}
             >
               <CenterFocusStrongIcon />
             </Fab>
+            {productNERCaptureStatus === ImageCaptureStatus.LOADING ||
+            webcamState === false ? (
+              <CircularProgress
+                size={68}
+                style={{
+                  position: "absolute",
+                }}
+              />
+            ) : null}
           </Box>
         </Stack>
       </DialogContent>

@@ -35,3 +35,7 @@ body {
     margin: 0;
   }
 }
+
+video {
+  transform: scaleX(-1);
+}
