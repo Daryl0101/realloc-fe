@@ -8,6 +8,7 @@ import {
   Fab,
   IconButton,
   LinearProgress,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -200,16 +201,30 @@ const WebcamCanvas = ({
         >
           {!webcamState &&
           productNERCaptureStatus === ImageCaptureStatus.CAPTURING ? (
-            <Stack
-              spacing={2}
-              height={window.screen.height * 0.5}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <CircularProgress size={100} />
-              <Typography variant="h5">Starting Camera</Typography>
-            </Stack>
+            // <Stack
+            //   spacing={2}
+            //   height={window.screen.height * 0.5}
+            //   display="flex"
+            //   alignItems="center"
+            //   justifyContent="center"
+            // >
+            //   <CircularProgress size={100} />
+            //   <Typography variant="h5">Starting Camera</Typography>
+            // </Stack>
+            <Skeleton
+              width={
+                window.screen.width > window.screen.height
+                  ? window.screen.height * 0.5
+                  : window.screen.width * 0.5
+              }
+              height={
+                window.screen.width > window.screen.height
+                  ? window.screen.height * 0.5
+                  : window.screen.width * 0.5
+              }
+              variant="rounded"
+              animation="wave"
+            />
           ) : null}
           {!imgSrc ? (
             <Box display={webcamState ? "block" : "none"}>
