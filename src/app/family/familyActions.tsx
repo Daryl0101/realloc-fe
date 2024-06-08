@@ -58,6 +58,7 @@ const FamilyActions = ({
     const result = await deleteFamilyAPICall(params.row.id);
     if (result.success) {
       enqueueSnackbar(result.success, { variant: "success" });
+      searchFamily();
     } else if (result.error) {
       if (typeof result.error === "string")
         enqueueSnackbar(result.error, { variant: "error" });
@@ -67,7 +68,6 @@ const FamilyActions = ({
         });
       }
     }
-    searchFamily();
 
     setPageState((prevState) => ({ ...prevState, status: Status.OPEN }));
   };
