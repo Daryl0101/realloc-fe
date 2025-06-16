@@ -1,6 +1,6 @@
 # ReAlloc - Food Allocation Management System (Frontend)
 
-[Click here to hop to Backend](https://github.com/Daryl0101/realloc-be/blob/master/README.md?plain=1)
+[Click here to hop to Backend](https://github.com/Daryl0101/realloc-be)
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
